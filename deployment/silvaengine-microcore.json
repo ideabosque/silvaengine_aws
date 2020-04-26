@@ -1,0 +1,100 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Resources": {
+      "SilvaEngineMicroCoreExecRole": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": [
+                    "lambda.amazonaws.com"
+                  ]
+                },
+                "Action": [
+                  "sts:AssumeRole"
+                ]
+              }
+            ]
+          },
+          "RoleName": "silvaengine_microcore_exec",
+          "Path": "/",
+          "Policies": [
+            {
+              "PolicyName": "silvaengine_microcore_exec_policy",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Action": [
+                      "logs:CreateLogGroup",
+                      "logs:CreateLogStream",
+                      "logs:PutLogEvents"
+                    ],
+                    "Resource": "arn:aws:logs:*:*:*",
+                    "Effect": "Allow"
+                  },
+                  {
+                    "Action": [
+                      "sqs:*",
+                      "dynamodb:*",
+                      "cloudwatch:*",
+                      "iam:ListRoles",
+                      "sns:*",
+                      "lambda:*",
+                      "ec2:*"
+                    ],
+                    "Resource": "*",
+                    "Effect": "Allow"
+                  },
+                  {
+                    "Action": [
+                      "iam:ListRoles",
+                      "iam:ListOpenIdConnectProviders",
+                      "sns:ListPlatformApplications"
+                    ],
+                    "Resource": "*",
+                    "Effect": "Allow"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "SilvaEngineMicroCore": {
+        "Type": "AWS::Lambda::Function",
+        "Properties": {
+          "FunctionName": "silvaengine_microcore",
+          "Handler": "workers.handler",
+          "Layers": [
+            "arn:aws:lambda:us-west-2:305624596524:layer:silvaengine_layer:11"
+          ],
+          "Role": {
+            "Fn::GetAtt": [
+              "SilvaEngineMicroCoreExecRole",
+              "Arn"
+            ]
+          },
+          "Code": {
+            "S3Bucket": "silvaengine-aws",
+            "S3Key": "silvaengine_microcore.zip"
+          },
+          "Runtime": "python3.7",
+          "Timeout": "300",
+          "Environment": {
+            "Variables": {
+              "LOGGINGLEVEL": "logging.INFO"
+            }
+          }
+        },
+        "DependsOn": [
+          "SilvaEngineMicroCoreExecRole"
+        ]
+      }
+    }
+  }
+  
