@@ -8,7 +8,7 @@ from pynamodb.attributes import (
 )
 
 
-class ItemMap(MapAttribute):
+class ItemReceiptItemMap(MapAttribute):
     internal_id = UnicodeAttribute()
     item_no = UnicodeAttribute()
     qty = NumberAttribute()
@@ -25,10 +25,10 @@ class ShipToMap(MapAttribute):
     zip = UnicodeAttribute()
 
 
-class DataMap(MapAttribute):
+class ItemReceiptDataMap(MapAttribute):
     itemreceipt_id = UnicodeAttribute(default='#####')
     internal_id = UnicodeAttribute()
-    items = ListAttribute(of=ItemMap)
+    items = ListAttribute(of=ItemReceiptItemMap)
     key = UnicodeAttribute()
     order_date = UTCDateTimeAttribute()
     ref_no = ListAttribute()

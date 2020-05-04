@@ -44,8 +44,8 @@ class BackOffice(object):
         OrderMapAttributesModule = __import__(
             self.setting.get("order_map_attributes_module", "datawald_model.order_map_attributes")
         )
-        Data = getattr(OrderMapAttributesModule, 'DataMap')
-        Item = getattr(OrderMapAttributesModule, 'ItemMap')
+        Data = getattr(OrderMapAttributesModule, 'OrderDataMap')
+        Item = getattr(OrderMapAttributesModule, 'OrderItemMap')
 
         txStatus = 'N' if order.get('order_status', 'new').lower() in self.orderStatus else 'I'  # N or I
 
@@ -102,8 +102,8 @@ class BackOffice(object):
         ItemReceiptMapAttributesModule = __import__(
             self.setting.get("itemreceipt_map_attributes_module", "datawald_model.itemreceipt_map_attributes")
         )
-        Data = getattr(ItemReceiptMapAttributesModule, 'DataMap') 
-        Item = getattr(ItemReceiptMapAttributesModule, 'ItemMap')
+        Data = getattr(ItemReceiptMapAttributesModule, 'ItemReceiptDataMap')
+        Item = getattr(ItemReceiptMapAttributesModule, 'ItemReceiptItemMap')
 
         txStatus = 'N'
 

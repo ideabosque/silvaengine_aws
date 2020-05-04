@@ -8,7 +8,7 @@ from pynamodb.attributes import (
 )
 
 
-class ItemMap(MapAttribute):
+class OrderItemMap(MapAttribute):
     price = NumberAttribute()
     qty = NumberAttribute()
     sku = UnicodeAttribute()
@@ -32,7 +32,7 @@ class AddressesMap(MapAttribute):
     shipto = AddressMap()
 
 
-class DataMap(MapAttribute):
+class OrderDataMap(MapAttribute):
     addresses = AddressesMap()
-    items = ListAttribute(of=ItemMap)
+    items = ListAttribute(of=OrderItemMap)
 
