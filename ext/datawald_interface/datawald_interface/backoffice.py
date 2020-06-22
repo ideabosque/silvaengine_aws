@@ -38,19 +38,76 @@ class BackOffice(object):
     def __init__(self, logger, **setting):
         self.logger = logger
         self.setting = setting
-        self.orderStatus = setting.get("order_status", [])
+        self.order_status = setting.get("order_status", [])
 
-    def insertOrder(self, order):
-        OrderMapAttributesModule = __import__(
+        self.common_object_types_module =  __import__(
+            self.setting.get("common_object_types_module", "datawald_model.common_object_types")
+        )
+        self.input_type_class = getattr(self.common_object_types_module, 'InputType')
+        self.transaction_status_input_type_class = getattr(self.common_object_types_module, 'TransactionStatusInputType')
+        
+        self.order_object_types_module = __import__(
+            self.setting.get("order_object_types_module", "datawald_model.order_object_types")
+        )
+        self.order_type_class = getattr(self.order_object_types_module, 'OrderType')
+        self.order_input_type_class = getattr(self.order_object_types_module, 'OrderInputType')
+        
+        self.itemreceipt_object_types_module = __import__(
+            self.setting.get("itemreceipt_object_types_module", "datawald_model.itemreceipt_object_types")
+        )
+        self.itemreceipt_type_class = getattr(self.itemreceipt_object_types_module, 'ItemReceiptType')
+        self.itemreceipt_input_type_class = getattr(self.itemreceipt_object_types_module, 'ItemReceiptInputType')
+
+    def _get_transaction(self, source, src_id, tx_type):
+        count = TransactionModel.source_index.count(
+            source, 
+            TransactionModel.src_id==src_id,
+            TransactionModel.type==tx_type
+        )
+        if count >= 0:
+            results = TransactionModel.source_index.query(
+                source, 
+                TransactionModel.src_id==src_id,
+                TransactionModel.type==tx_type
+            )
+            return results.next()
+        else:
+            return None
+
+    def get_transaction(self, source, src_id, tx_type):
+        transaction = self._get_transaction(source, src_id, tx_type)
+        if tx_type == "order":
+            item_type_class = getattr(self.order_object_types_module, 'OrderItemType')
+            transaction_type_class = self.order_type_class
+        elif tx_type == "itemreceipt":
+            item_type_class = getattr(self.itemreceipt_object_types_module, 'ItemReceiptItemType')
+            transaction_type_class = self.itemreceipt_type_class
+
+        if transaction is not None:
+            transaction.data.items = [
+                item_type_class(**dict(
+                        (
+                            k, 
+                            Decimal(str(v)) if isinstance(v, (float, int)) else v
+                        ) for k, v in item.items()
+                    )
+                ) for item in transaction.data.items
+            ]
+            return transaction_type_class(**transaction.__dict__['attribute_values'])
+        else:
+            return {}
+
+    def insert_order(self, order):
+        order_map_attributes_module = __import__(
             self.setting.get("order_map_attributes_module", "datawald_model.order_map_attributes")
         )
-        Data = getattr(OrderMapAttributesModule, 'OrderDataMap')
-        Item = getattr(OrderMapAttributesModule, 'OrderItemMap')
+        data_class = getattr(order_map_attributes_module, 'OrderDataMap')
+        item_class = getattr(order_map_attributes_module, 'OrderItemMap')
 
-        txStatus = 'N' if order.get('order_status', 'new').lower() in self.orderStatus else 'I'  # N or I
+        tx_status = 'N' if order.get('order_status', 'new').lower() in self.order_status else 'I'  # N or I
 
         id = str(uuid.uuid1())
-        createdAt = datetime.utcnow()
+        created_at = datetime.utcnow()
 
         count = TransactionModel.source_index.count(
             order["source"], 
@@ -64,203 +121,147 @@ class BackOffice(object):
             )
             _order = results.next()
             id = _order.id
-            createdAt = _order.created_at
+            created_at = _order.created_at
             if _order.tx_status == 'N':
-                txStatus = 'P'
-            elif txStatus == 'N' and _order.tx_status == 'F':
-                txStatus = 'N'
+                tx_status = 'P'
+            elif tx_status == 'N' and _order.tx_status == 'F':
+                tx_status = 'N'
             else:
-                txStatus = _order.tx_status
+                tx_status = _order.tx_status
 
         order['data']['items'] = [
-            Item(**dict(
+            item_class(**dict(
                     (
                         k, 
                         float(item[k]) if isinstance(v, NumberAttribute) else item[k]
-                    ) for k, v in Item.__dict__["_attributes"].items()
+                    ) for k, v in item_class.__dict__["_attributes"].items()
                 )
             ) for item in order['data']['items']
         ]
-        orderModel = TransactionModel(
+        order_model = TransactionModel(
             id,
             **{
                 'source': order["source"],
                 'src_id': order["src_id"],
                 'type': 'order',
-                'data': Data(**order['data']),
+                'data': data_class(**order['data']),
                 'history': [],
-                'created_at': createdAt,
+                'created_at': created_at,
                 'updated_at': datetime.utcnow(),
                 'tx_note': '{source} -> DataWald'.format(source=order["source"]),
-                'tx_status': txStatus
+                'tx_status': tx_status
             }
         )
 
-        return orderModel.save()
+        return order_model.save()
 
-    def insertItemReceipt(self, itemReceipt):
-        ItemReceiptMapAttributesModule = __import__(
+    def insert_item_receipt(self, item_receipt):
+        item_receipt_map_attributes_module = __import__(
             self.setting.get("itemreceipt_map_attributes_module", "datawald_model.itemreceipt_map_attributes")
         )
-        Data = getattr(ItemReceiptMapAttributesModule, 'ItemReceiptDataMap')
-        Item = getattr(ItemReceiptMapAttributesModule, 'ItemReceiptItemMap')
+        data_class = getattr(item_receipt_map_attributes_module, 'ItemReceiptDataMap')
+        item_class = getattr(item_receipt_map_attributes_module, 'ItemReceiptItemMap')
 
-        txStatus = 'N'
+        tx_status = 'N'
 
         id = str(uuid.uuid1())
-        createdAt = datetime.utcnow()
+        created_at = datetime.utcnow()
         history = []
 
         count = TransactionModel.source_index.count(
-            itemReceipt["source"], 
-            TransactionModel.src_id==itemReceipt["src_id"]
+            item_receipt["source"], 
+            TransactionModel.src_id==item_receipt["src_id"]
         )
 
         if count >= 1:
             results = TransactionModel.source_index.query(
-                itemReceipt["source"], 
-                TransactionModel.src_id==itemReceipt["src_id"]
+                item_receipt["source"], 
+                TransactionModel.src_id==item_receipt["src_id"]
             )
-            _itemReceipt = results.next()
-            id = _itemReceipt.id
-            createdAt = _itemReceipt.created_at
+            _item_receipt = results.next()
+            id = _item_receipt.id
+            created_at = _item_receipt.created_at
 
-            data = _itemReceipt.data.__dict__["attribute_values"]
-            changedValues = [{k: v} for k, v in itemReceipt["data"].items() if data[k] != v]
-            if len(changedValues) > 0:
-                _itemReceipt.data.itemreceipt_id = _itemReceipt.tgt_id 
-                history = _itemReceipt.history + [_itemReceipt.data]
+            data = _item_receipt.data.__dict__["attribute_values"]
+            changed_values = [{k: v} for k, v in item_receipt["data"].items() if data[k] != v]
+            if len(changed_values) > 0:
+                _item_receipt.data.itemreceipt_id = _item_receipt.tgt_id 
+                history = _item_receipt.history + [_item_receipt.data]
             else:
-                txStatus = 'I'
-                return _itemReceipt.update(
+                tx_status = 'I'
+                return _item_receipt.update(
                     actions=[
                         TransactionModel.updated_at.set(datetime.utcnow()),
                         TransactionModel.tx_note.set(
-                            "No update item recepit: {0}/{1}".format(itemReceipt["source"], itemReceipt["src_id"])
+                            "No update item recepit: {0}/{1}".format(item_receipt["source"], item_receipt["src_id"])
                         ),
-                        TransactionModel.tx_status.set(txStatus)
+                        TransactionModel.tx_status.set(tx_status)
                     ]
                 )
 
-        itemReceipt["data"]["items"] = [
-            Item(**dict(
+        item_receipt["data"]["items"] = [
+            item_class(**dict(
                     (
                         k, 
                         float(item[k]) if isinstance(v, NumberAttribute) else item[k]
-                    ) for k, v in Item.__dict__["_attributes"].items()
+                    ) for k, v in item_class.__dict__["_attributes"].items()
                 )
-            ) for item in itemReceipt["data"]["items"]
+            ) for item in item_receipt["data"]["items"]
         ]
         
-        itemReceiptsModel = TransactionModel(
+        item_receipts_model = TransactionModel(
             id,
             **{
-                'source': itemReceipt["source"],
-                'src_id': itemReceipt['src_id'],
+                'source': item_receipt["source"],
+                'src_id': item_receipt['src_id'],
                 'type': 'itemreceipt',
-                'data': Data(**itemReceipt["data"]),
+                'data': data_class(**item_receipt["data"]),
                 'history': history,
-                'created_at': createdAt,
+                'created_at': created_at,
                 'updated_at': datetime.utcnow(),
-                'tx_note': '{source} -> DataWald'.format(source=itemReceipt["source"]),
-                'tx_status': txStatus
+                'tx_note': '{source} -> DataWald'.format(source=item_receipt["source"]),
+                'tx_status': tx_status
             }
         )
 
-        return itemReceiptsModel.save()
+        return item_receipts_model.save()
 
-    def updateTransactionStatus(self, id, transactionStatus):
-        transactionModel = TransactionModel.get(id)
+    def update_transaction_status(self, id, transaction_status):
+        transaction_model = TransactionModel.get(id)
 
-        return transactionModel.update(
+        return transaction_model.update(
             actions=[
-                TransactionModel.tgt_id.set(transactionStatus['tgt_id']),
+                TransactionModel.tgt_id.set(transaction_status['tgt_id']),
                 TransactionModel.updated_at.set(datetime.utcnow()),
-                TransactionModel.tx_note.set(transactionStatus['tx_note']),
-                TransactionModel.tx_status.set(transactionStatus['tx_status'])
+                TransactionModel.tx_note.set(transaction_status['tx_note']),
+                TransactionModel.tx_status.set(transaction_status['tx_status'])
             ]
         )
 
-    def backofficeGraphql(self, **params):
-        CommonObjectTypesModule =  __import__(
-            self.setting.get("common_object_types_module", "datawald_model.common_object_types")
-        )
-        InputType = getattr(CommonObjectTypesModule, 'InputType')
-        TransactionStatusInputType = getattr(CommonObjectTypesModule, 'TransactionStatusInputType')
-        
-        OrderObjectTypesModule = __import__(
-            self.setting.get("order_object_types_module", "datawald_model.order_object_types")
-        )
-        OrderType = getattr(OrderObjectTypesModule, 'OrderType')
-        OrderInputType = getattr(OrderObjectTypesModule, 'OrderInputType')
-        
-        ItemreceiptObjectTypesModule = __import__(
-            self.setting.get("itemreceipt_object_types_module", "datawald_model.itemreceipt_object_types")
-        )
-        ItemReceiptType = getattr(ItemreceiptObjectTypesModule, 'ItemReceiptType')
-        ItemReceiptInputType = getattr(ItemreceiptObjectTypesModule, 'ItemReceiptInputType')
-
-        # outer = self
-        def _getTransaction(source, src_id, txType):
-            count = TransactionModel.source_index.count(
-                source, 
-                TransactionModel.src_id==src_id,
-                TransactionModel.type==txType
-            )
-            if count >= 0:
-                results = TransactionModel.source_index.query(
-                    source, 
-                    TransactionModel.src_id==src_id,
-                    TransactionModel.type==txType
-                )
-                return results.next()
-            else:
-                return None
-
-        def getTransaction(source, src_id, txType):
-            transaction = _getTransaction(source, src_id, txType)
-            if txType == "order":
-                ItemType = getattr(OrderObjectTypesModule, 'OrderItemType')
-                TransactionType = OrderType
-            elif txType == "itemreceipt":
-                ItemType = getattr(ItemreceiptObjectTypesModule, 'ItemReceiptItemType')
-                TransactionType = ItemReceiptType
-
-            if transaction is not None:
-                transaction.data.items = [
-                    ItemType(**dict(
-                            (
-                                k, 
-                                Decimal(str(v)) if isinstance(v, (float, int)) else v
-                            ) for k, v in item.items()
-                        )
-                    ) for item in transaction.data.items
-                ]
-                return TransactionType(**transaction.__dict__['attribute_values'])
-            else:
-                return {}
+    def backoffice_graphql(self, **params):
+        outer = self
 
         class Query(ObjectType):
-            order = Field(OrderType, input=InputType(required=True))
-            itemreceipt = Field(ItemReceiptType, input=InputType(required=True))
+            order = Field(outer.order_type_class, input=outer.input_type_class(required=True))
+            itemreceipt = Field(outer.itemreceipt_type_class, input=outer.input_type_class(required=True))
 
             def resolve_order(self, info, input):
-                return getTransaction(input.source, input.src_id, "order")
+                return outer.get_transaction(input.source, input.src_id, "order")
 
             def resolve_itemreceipt(self, info, input):
-                return getTransaction(input.source, input.src_id, "itemreceipt")
+                return outer.get_transaction(input.source, input.src_id, "itemreceipt")
 
         ## Mutation ##
 
         class InsertOrder(Mutation):
             class Arguments:
-                order_input = OrderInputType(required=True)
+                order_input = outer.order_input_type_class(required=True)
             
-            order = Field(OrderType)
+            order = Field(outer.order_type_class)
             @staticmethod
             def mutate(root, info, order_input=None):
                 try:
-                    self.insertOrder(
+                    self.insert_order(
                         {
                             "source": order_input.source,
                             "src_id": order_input.src_id,
@@ -268,7 +269,7 @@ class BackOffice(object):
                             "data": json.loads(order_input.data)
                         }
                     )
-                    order = getTransaction(order_input.source, order_input.src_id, "order")
+                    order = outer.get_transaction(order_input.source, order_input.src_id, "order")
                 except Exception:
                     log = traceback.format_exc()
                     self.logger.exception(log)
@@ -278,20 +279,20 @@ class BackOffice(object):
 
         class InsertItemReceipt(Mutation):
             class Arguments:
-                itemreceipt_input = ItemReceiptInputType(required=True)
+                itemreceipt_input = outer.itemreceipt_input_type_class(required=True)
             
-            itemreceipt = Field(ItemReceiptType)
+            itemreceipt = Field(outer.itemreceipt_type_class)
             @staticmethod
             def mutate(root, info, itemreceipt_input=None):
                 try:
-                    self.insertItemReceipt(
+                    self.insert_item_receipt(
                         {
                             "source": itemreceipt_input.source,
                             "src_id": itemreceipt_input.src_id,
                             "data": json.loads(itemreceipt_input.data)
                         }
                     )
-                    itemreceipt = getTransaction(itemreceipt_input.source, itemreceipt_input.src_id, "itemreceipt")
+                    itemreceipt = outer.get_transaction(itemreceipt_input.source, itemreceipt_input.src_id, "itemreceipt")
                 except Exception:
                     log = traceback.format_exc()
                     self.logger.exception(log)
@@ -301,13 +302,13 @@ class BackOffice(object):
 
         class UpdateTransactionStatus(Mutation):
             class Arguments:
-                transaction_status_input = TransactionStatusInputType(required=True)
+                transaction_status_input = outer.transaction_status_input_type_class(required=True)
             
             status = Boolean()
             @staticmethod
             def mutate(root, info, transaction_status_input=None):
                 try:
-                    self.updateTransactionStatus(
+                    self.update_transaction_status(
                         transaction_status_input.id,
                         {
                             "tgt_id": transaction_status_input.tgt_id,
@@ -330,7 +331,7 @@ class BackOffice(object):
 
         ## Mutation ##
 
-        schema = Schema(query=Query, mutation=Mutations, types=[OrderType, ItemReceiptType])
+        schema = Schema(query=Query, mutation=Mutations, types=[outer.order_type_class, outer.itemreceipt_type_class])
 
         variables = params.get("variables", {})
         query = params.get("query")
@@ -345,5 +346,5 @@ class BackOffice(object):
         }
         if (result.errors != None):
             response['errors'] = [str(error) for error in result.errors]
-        return Utility.jsonDumps(response)
+        return Utility.json_dumps(response)
 

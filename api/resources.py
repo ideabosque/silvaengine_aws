@@ -11,4 +11,4 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(eval(os.environ["LOGGINGLEVEL"]))
 
-handler = Resources.getHandler(logger) # input values for args and/or kwargs
+handler = Resources.get_handler(logger) # input values for args and/or kwargs

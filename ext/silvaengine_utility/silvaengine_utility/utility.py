@@ -37,5 +37,5 @@ class Struct(object):
 class Utility(object):
 
     @classmethod
-    def jsonDumps(cls, data):
+    def json_dumps(cls, data):
         return json.dumps(data, indent=4, cls=JSONEncoder, ensure_ascii=False)

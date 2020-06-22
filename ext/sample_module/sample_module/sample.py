@@ -7,5 +7,5 @@ class Sample(object):
         self.logger = logger
         self.setting = setting
     
-    def getSetting(self, **params):
+    def get_setting(self, **params):
         return json.dumps(params)

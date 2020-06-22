@@ -45,20 +45,20 @@ class JSONEncoder(json.JSONEncoder):
 
 class CloudformationStack(object):
     def __init__(self):
-        self.awsCloudformation = boto3.client(
+        self.aws_cloudformation = boto3.client(
             'cloudformation',
             region_name=os.getenv("region_name"),
             aws_access_key_id=os.getenv('aws_access_key_id'),
             aws_secret_access_key=os.getenv('aws_secret_access_key')
         )
-        self.awsS3 = boto3.resource(
+        self.aws_s3 = boto3.resource(
             's3',
             aws_access_key_id=os.getenv('aws_access_key_id'),
             aws_secret_access_key=os.getenv('aws_secret_access_key')
         )
 
     @staticmethod
-    def zip_dir(dirpath, fzip, isPackage=True):
+    def zip_dir(dirpath, fzip, is_package=True):
         basedir = os.path.dirname(dirpath) + '/'
         for root, dirs, files in os.walk(dirpath):
             # if os.path.basename(root)[0] == '.':
@@ -68,17 +68,17 @@ class CloudformationStack(object):
                 # if f[-1] == '~' or (f[0] == '.' and f != '.htaccess'):
                     # skip backup files and all hidden files except .htaccess
                     # continue
-                if not isPackage:
+                if not is_package:
                     dirname = ''
                 fzip.write(root + '/' + f, dirname + '/' + f)
 
-    def packAWSLambda(self, lambdaFile, base, packages, packageFiles=[], files={}):
-        fzip = zipfile.ZipFile(lambdaFile, 'w', zipfile.ZIP_DEFLATED)
+    def pack_aws_lambda(self, lambda_file, base, packages, package_files=[], files={}):
+        fzip = zipfile.ZipFile(lambda_file, 'w', zipfile.ZIP_DEFLATED)
         base = "{root_path}/{base}".format(
             root_path=os.getenv('root_path'),
             base=base
         )
-        self.zip_dir(base, fzip, isPackage=False)
+        self.zip_dir(base, fzip, is_package=False)
         for package in packages:
             self.zip_dir(
                 "{site_packages}/{package}".format(
@@ -87,7 +87,7 @@ class CloudformationStack(object):
                 ),
                 fzip
             )
-        for f in packageFiles:
+        for f in package_files:
             fzip.write(
                 "{root_path}/deployment/{site_packages}/{file}".format(
                     root_path=os.getenv('root_path'),
@@ -102,8 +102,8 @@ class CloudformationStack(object):
             )
         fzip.close()
 
-    def packAWSLambdaLayer(self, layerFile, packages, packageFiles=[], files={}):
-        fzip = zipfile.ZipFile(layerFile, 'w', zipfile.ZIP_DEFLATED)
+    def pack_aws_lambda_layer(self, layer_file, packages, package_files=[], files={}):
+        fzip = zipfile.ZipFile(layer_file, 'w', zipfile.ZIP_DEFLATED)
         for package in packages:
             self.zip_dir(
                 "{site_packages}/{package}".format(
@@ -112,7 +112,7 @@ class CloudformationStack(object):
                 ),
                 fzip
             )
-        for f in packageFiles:
+        for f in package_files:
             fzip.write(
                 "{root_path}/deployment/{site_packages}/{file}".format(
                     root_path=os.getenv('root_path'),
@@ -127,24 +127,24 @@ class CloudformationStack(object):
             )
         fzip.close()
 
-    def uploadAWSS3Bucket(self, lambdaFile, bucket):
-        f = open(lambdaFile, 'rb')
-        self.awsS3.Bucket(bucket).put_object(Key=lambdaFile, Body=f)
+    def upload_aws_s3_bucket(self, lambda_file, bucket):
+        f = open(lambda_file, 'rb')
+        self.aws_s3.Bucket(bucket).put_object(Key=lambda_file, Body=f)
 
     # Check if the stack exists.
-    def _stackExists(self, stackName):
-        stacks = self.awsCloudformation.list_stacks()['StackSummaries']
+    def _stack_exists(self, stack_name):
+        stacks = self.aws_cloudformation.list_stacks()['StackSummaries']
         for stack in stacks:
             if stack['StackStatus'] == 'DELETE_COMPLETE':
                 continue
-            if stackName == stack['StackName']:
+            if stack_name == stack['StackName']:
                 return True
         return False
 
     # Retrieve the last version of the object in a S3 bucket.
-    def _getObjectLastVersion(self, s3Key):
-        objectSummary = self.awsS3.ObjectSummary(os.getenv('bucket'), s3Key)
-        return objectSummary.get()['VersionId']
+    def _get_object_last_version(self, s3Key):
+        object_summary = self.aws_s3.ObjectSummary(os.getenv('bucket'), s3Key)
+        return object_summary.get()['VersionId']
 
     @classmethod
     def deploy(cls):
@@ -152,43 +152,43 @@ class CloudformationStack(object):
         # Package and upload the code.
         for name, funct in lambdaConfig["functions"].items():
             if funct["update"]:
-                lambdaFile = "{function_name}.zip".format(function_name=name)
-                cf.packAWSLambda(
-                    lambdaFile,
+                lambda_file = "{function_name}.zip".format(function_name=name)
+                cf.pack_aws_lambda(
+                    lambda_file,
                     funct["base"],
                     funct["packages"],
-                    packageFiles=funct["package_files"],
+                    package_files=funct["package_files"],
                     files=funct["files"]
                 )
-                cf.uploadAWSS3Bucket(lambdaFile, os.getenv("bucket"))
+                cf.upload_aws_s3_bucket(lambda_file, os.getenv("bucket"))
                 logger.info("Upload the lambda package.")
 
         for name, layer in lambdaConfig["layers"].items():
             if layer["update"]:
-                layerFile = "{layer_name}.zip".format(layer_name=name)
-                cf.packAWSLambdaLayer(
-                    layerFile,
+                layer_file = "{layer_name}.zip".format(layer_name=name)
+                cf.pack_aws_lambda_layer(
+                    layer_file,
                     layer["packages"],
-                    packageFiles=layer["package_files"],
+                    package_files=layer["package_files"],
                     files=layer["files"]
                 )
-                cf.uploadAWSS3Bucket(layerFile, os.getenv("bucket"))
+                cf.upload_aws_s3_bucket(layer_file, os.getenv("bucket"))
                 logger.info("Upload the lambda layer package.")
 
         # Update the cloudformation stack.
-        stackName = os.getenv("stack_name")
-        template = open("{stack_name}.json".format(stack_name=stackName), "r")
+        stack_name = os.getenv("stack_name")
+        template = open("{stack_name}.json".format(stack_name=stack_name), "r")
         template = json.load(template)
 
         for key, value in template["Resources"].items():
             if value["Type"] == "AWS::Lambda::Function":
-                functionName = value["Properties"]["FunctionName"]
-                functionFile = "{function_name}.zip".format(function_name=functionName)
-                functionVersion = "{function_name}_version".format(function_name=functionName)
+                function_name = value["Properties"]["FunctionName"]
+                function_file = "{function_name}.zip".format(function_name=function_name)
+                function_version = "{function_name}_version".format(function_name=function_name)
                 template["Resources"][key]["Properties"]["Code"] = {
                     "S3Bucket": os.getenv("bucket"),
-                    "S3ObjectVersion": os.getenv(functionVersion, cf._getObjectLastVersion(functionFile)),
-                    "S3Key": functionFile
+                    "S3ObjectVersion": os.getenv(function_version, cf._get_object_last_version(function_file)),
+                    "S3Key": function_file
                 }
                 template["Resources"][key]["Properties"]["Environment"]["Variables"] = dict(
                     (
@@ -197,17 +197,17 @@ class CloudformationStack(object):
                     ) for k, v in template["Resources"][key]["Properties"]["Environment"]["Variables"].items()
                 )
             elif value["Type"] == "AWS::Lambda::LayerVersion":
-                layerName = value["Properties"]["LayerName"]
-                layerFile = "{layer_name}.zip".format(layer_name=layerName)
-                layerVersion = "{layer_name}_version".format(layer_name=layerName)
+                layer_name = value["Properties"]["LayerName"]
+                layer_file = "{layer_name}.zip".format(layer_name=layer_name)
+                layer_version = "{layer_name}_version".format(layer_name=layer_name)
                 template["Resources"][key]["Properties"]["Content"] = {
                     "S3Bucket": os.getenv("bucket"),
-                    "S3ObjectVersion": os.getenv(layerVersion, cf._getObjectLastVersion(layerFile)),
-                    "S3Key": layerFile
+                    "S3ObjectVersion": os.getenv(layer_version, cf._get_object_last_version(layer_file)),
+                    "S3Key": layer_file
                 }
 
         params = {
-            "StackName": stackName,
+            "StackName": stack_name,
             "TemplateBody": json.dumps(template, indent=4),
             "Capabilities": ['CAPABILITY_NAMED_IAM'],
             "Tags": [
@@ -218,22 +218,22 @@ class CloudformationStack(object):
             ],
             "Parameters": []
         }
-        if cf._stackExists(stackName):
-            response = cf.awsCloudformation.update_stack(**params)
+        if cf._stack_exists(stack_name):
+            response = cf.aws_cloudformation.update_stack(**params)
         else:
-            response = cf.awsCloudformation.create_stack(**params)
+            response = cf.aws_cloudformation.create_stack(**params)
         logger.info(
             json.dumps(response, indent=4, cls=JSONEncoder, ensure_ascii=False)
         )
 
-        stack = cf.awsCloudformation.describe_stacks(StackName=stackName)["Stacks"][0]
+        stack = cf.aws_cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]
         while (stack["StackStatus"].find("IN_PROGRESS") != -1):
             logger.info(
                 json.dumps(stack["StackStatus"], indent=4, cls=JSONEncoder, ensure_ascii=False)
             )
             sleep(5)
-            stack = cf.awsCloudformation.describe_stacks(
-                StackName=stackName
+            stack = cf.aws_cloudformation.describe_stacks(
+                StackName=stack_name
             )["Stacks"][0]
 
         if stack["StackStatus"] == "CREATE_COMPLETE":

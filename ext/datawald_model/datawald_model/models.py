@@ -126,3 +126,32 @@ class BusinessEntityModel(Model):
     type = UnicodeAttribute()
     data = MapAttribute()
     source_index = SourceIdentityIndex()
+
+
+class SyncControlEntityMap(MapAttribute):
+    id = UnicodeAttribute()
+    src_id = UnicodeAttribute()
+    tgt_id = UnicodeAttribute()
+    task_note = UnicodeAttribute()
+    task_status = UnicodeAttribute()
+    updated_at = UnicodeAttribute()
+
+
+class SyncControl(Model):
+    class Meta:
+        region = 'us-west-2'
+        billing_mode = 'PAY_PER_REQUEST'
+        table_name = 'synccontrol'
+    id = UnicodeAttribute(hash_key=True)
+    frontend = UnicodeAttribute()
+    backoffice = UnicodeAttribute()
+    cut_dt = UTCDateTimeAttribute()
+    start_dt = UTCDateTimeAttribute()
+    end_dt = UTCDateTimeAttribute()
+    offset = NumberAttribute()
+    store_code = UnicodeAttribute()
+    table = UnicodeAttribute()
+    task = UnicodeAttribute()
+    sync_note = UnicodeAttribute()
+    sync_status = UnicodeAttribute()
+    entities = ListAttribute(of=SyncControlEntityMap)

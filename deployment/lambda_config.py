@@ -1,7 +1,7 @@
 lambdaConfig = {
     "functions": {
         "silvaengine_area_resource": {
-            "update": True,
+            "update": False,
             "base": "/api",
             "packages": [],
             "package_files": [],
@@ -17,7 +17,7 @@ lambdaConfig = {
     },
     "layers": {
         "silvaengine_layer": {
-            "update": True,
+            "update": False,
             "packages": [
                 "silvaengine_utility",
                 "sample_module",
