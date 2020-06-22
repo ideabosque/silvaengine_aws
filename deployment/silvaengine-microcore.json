@@ -71,7 +71,7 @@
           "FunctionName": "silvaengine_microcore",
           "Handler": "workers.handler",
           "Layers": [
-            "arn:aws:lambda:us-west-2:305624596524:layer:silvaengine_layer:11"
+            "arn:aws:lambda:us-west-2:305624596524:layer:silvaengine_layer:23"
           ],
           "Role": {
             "Fn::GetAtt": [

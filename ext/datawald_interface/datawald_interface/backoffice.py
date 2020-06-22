@@ -242,8 +242,8 @@ class BackOffice(object):
         outer = self
 
         class Query(ObjectType):
-            order = Field(outer.order_type_class, input=outer.input_type_class(required=True))
-            itemreceipt = Field(outer.itemreceipt_type_class, input=outer.input_type_class(required=True))
+            order = Field(self.order_type_class, input=self.input_type_class(required=True))
+            itemreceipt = Field(self.itemreceipt_type_class, input=self.input_type_class(required=True))
 
             def resolve_order(self, info, input):
                 return outer.get_transaction(input.source, input.src_id, "order")
@@ -255,9 +255,9 @@ class BackOffice(object):
 
         class InsertOrder(Mutation):
             class Arguments:
-                order_input = outer.order_input_type_class(required=True)
+                order_input = self.order_input_type_class(required=True)
             
-            order = Field(outer.order_type_class)
+            order = Field(self.order_type_class)
             @staticmethod
             def mutate(root, info, order_input=None):
                 try:
@@ -269,7 +269,7 @@ class BackOffice(object):
                             "data": json.loads(order_input.data)
                         }
                     )
-                    order = outer.get_transaction(order_input.source, order_input.src_id, "order")
+                    order = self.get_transaction(order_input.source, order_input.src_id, "order")
                 except Exception:
                     log = traceback.format_exc()
                     self.logger.exception(log)
@@ -279,9 +279,9 @@ class BackOffice(object):
 
         class InsertItemReceipt(Mutation):
             class Arguments:
-                itemreceipt_input = outer.itemreceipt_input_type_class(required=True)
+                itemreceipt_input = self.itemreceipt_input_type_class(required=True)
             
-            itemreceipt = Field(outer.itemreceipt_type_class)
+            itemreceipt = Field(self.itemreceipt_type_class)
             @staticmethod
             def mutate(root, info, itemreceipt_input=None):
                 try:
@@ -292,7 +292,7 @@ class BackOffice(object):
                             "data": json.loads(itemreceipt_input.data)
                         }
                     )
-                    itemreceipt = outer.get_transaction(itemreceipt_input.source, itemreceipt_input.src_id, "itemreceipt")
+                    itemreceipt = self.get_transaction(itemreceipt_input.source, itemreceipt_input.src_id, "itemreceipt")
                 except Exception:
                     log = traceback.format_exc()
                     self.logger.exception(log)
@@ -302,7 +302,7 @@ class BackOffice(object):
 
         class UpdateTransactionStatus(Mutation):
             class Arguments:
-                transaction_status_input = outer.transaction_status_input_type_class(required=True)
+                transaction_status_input = self.transaction_status_input_type_class(required=True)
             
             status = Boolean()
             @staticmethod
@@ -331,7 +331,7 @@ class BackOffice(object):
 
         ## Mutation ##
 
-        schema = Schema(query=Query, mutation=Mutations, types=[outer.order_type_class, outer.itemreceipt_type_class])
+        schema = Schema(query=Query, mutation=Mutations, types=[self.order_type_class, self.itemreceipt_type_class])
 
         variables = params.get("variables", {})
         query = params.get("query")
