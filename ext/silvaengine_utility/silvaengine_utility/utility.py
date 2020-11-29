@@ -26,6 +26,19 @@ class JSONEncoder(json.JSONEncoder):
             return super(JSONEncoder, self).default(o)
 
 
+class JSONDecoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        json.JSONDecoder.__init__(self, object_hook=self.object_hook, *args, **kwargs)
+
+    def object_hook(self, o):
+        if '_type' not in o:
+            return o
+        type = o['_type']
+        if type in ['bytes', 'bytearray']:
+            return str(o['value'])
+        return o
+
+
 class Struct(object):
 
     def __init__(self, d):
@@ -44,4 +57,4 @@ class Utility(object):
 
     @classmethod
     def json_loads(cls, data):
-        return json.loads(data, cls=JSONEncoder)
+        return json.loads(data, cls=JSONDecoder)
