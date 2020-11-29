@@ -12,25 +12,6 @@ from pynamodb.attributes import (
 )
 from graphene import Field, ObjectType, Schema, Mutation, Boolean
 from silvaengine_utility import Utility
-from decimal import Decimal
-
-
-class ModelEncoder(json.JSONEncoder):
-    
-    def default(self, obj):   # pylint: disable=E0202
-        if isinstance(obj, Decimal):
-            if obj % 1 > 0:
-                return float(obj)
-            else:
-                return str(obj)
-        if hasattr(obj, 'attribute_values'):
-            return obj.attribute_values
-        elif isinstance(obj, (datetime, date)):
-            return obj.isoformat()
-        elif isinstance(obj, (bytes, bytearray)):
-            return str(obj)
-        else:
-            return json.JSONEncoder.default(self, obj)
 
 
 class BackOffice(object):
@@ -106,7 +87,7 @@ class BackOffice(object):
 
         tx_status = 'N' if order.get('order_status', 'new').lower() in self.order_status else 'I'  # N or I
 
-        id = str(uuid.uuid1())
+        _id = str(uuid.uuid1())
         created_at = datetime.utcnow()
 
         count = TransactionModel.source_index.count(
@@ -120,7 +101,7 @@ class BackOffice(object):
                 TransactionModel.src_id==order["src_id"]
             )
             _order = results.next()
-            id = _order.id
+            _id = _order.id
             created_at = _order.created_at
             if _order.tx_status == 'N':
                 tx_status = 'P'
@@ -139,7 +120,7 @@ class BackOffice(object):
             ) for item in order['data']['items']
         ]
         order_model = TransactionModel(
-            id,
+            _id,
             **{
                 'source': order["source"],
                 'src_id': order["src_id"],
@@ -164,7 +145,7 @@ class BackOffice(object):
 
         tx_status = 'N'
 
-        id = str(uuid.uuid1())
+        _id = str(uuid.uuid1())
         created_at = datetime.utcnow()
         history = []
 
@@ -179,7 +160,7 @@ class BackOffice(object):
                 TransactionModel.src_id==item_receipt["src_id"]
             )
             _item_receipt = results.next()
-            id = _item_receipt.id
+            _id = _item_receipt.id
             created_at = _item_receipt.created_at
 
             data = _item_receipt.data.__dict__["attribute_values"]
@@ -210,7 +191,7 @@ class BackOffice(object):
         ]
         
         item_receipts_model = TransactionModel(
-            id,
+            _id,
             **{
                 'source': item_receipt["source"],
                 'src_id': item_receipt['src_id'],

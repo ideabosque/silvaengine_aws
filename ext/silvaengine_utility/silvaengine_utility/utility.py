@@ -16,6 +16,8 @@ class JSONEncoder(json.JSONEncoder):
                 return float(o)
             else:
                 return str(o)
+        elif hasattr(o, 'attribute_values'):
+            return o.attribute_values
         elif isinstance(o, (datetime, date)):
             return o.strftime("%Y-%m-%d %H:%M:%S")
         elif isinstance(o, (bytes, bytearray)):
@@ -39,3 +41,7 @@ class Utility(object):
     @classmethod
     def json_dumps(cls, data):
         return json.dumps(data, indent=4, cls=JSONEncoder, ensure_ascii=False)
+
+    @classmethod
+    def json_loads(cls, data):
+        return json.loads(data, cls=JSONEncoder)
