@@ -57,4 +57,4 @@ class Utility(object):
 
     @classmethod
     def json_loads(cls, data):
-        return json.loads(data, cls=JSONDecoder)
+        return json.loads(data, cls=JSONDecoder, parse_float=Decimal)
