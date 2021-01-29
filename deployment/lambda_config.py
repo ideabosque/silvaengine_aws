@@ -8,7 +8,7 @@ lambdaConfig = {
             "files": {}
         },
         "silvaengine_microcore": {
-            "update": True,
+            "update": False,
             "base": "/beehive/microcore",
             "packages": [],
             "package_files": [],
@@ -17,12 +17,9 @@ lambdaConfig = {
     },
     "layers": {
         "silvaengine_layer": {
-            "update": False,
+            "update": True,
             "packages": [
                 "silvaengine_utility",
-                "sample_module",
-                "datawald_interface",
-                "datawald_model",
                 "pynamodb",
                 "dateutil",
                 "graphene",
@@ -30,7 +27,23 @@ lambdaConfig = {
                 "graphql",
                 "graphql_relay",
                 "rx",
-                "promise"
+                "promise",
+                "requests",
+                "urllib3",
+                "chardet",
+                "certifi",
+                "idna"
+            ],
+            "package_files": [
+            ],
+            "files": {}
+        },
+        "silvaengine_microcore_layer": {
+            "update": True,
+            "packages": [
+                "sample_module",
+                "datawald_interface",
+                "datawald_model"
             ],
             "package_files": [
             ],

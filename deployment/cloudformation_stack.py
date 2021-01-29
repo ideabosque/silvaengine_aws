@@ -56,6 +56,11 @@ class CloudformationStack(object):
             aws_access_key_id=os.getenv('aws_access_key_id'),
             aws_secret_access_key=os.getenv('aws_secret_access_key')
         )
+        self.aws_lambda = boto3.client(
+            'lambda',
+            aws_access_key_id=os.getenv('aws_access_key_id'),
+            aws_secret_access_key=os.getenv('aws_secret_access_key')
+        )
 
     @staticmethod
     def zip_dir(dirpath, fzip, is_package=True):
@@ -142,9 +147,18 @@ class CloudformationStack(object):
         return False
 
     # Retrieve the last version of the object in a S3 bucket.
-    def _get_object_last_version(self, s3Key):
-        object_summary = self.aws_s3.ObjectSummary(os.getenv('bucket'), s3Key)
+    def _get_object_last_version(self, s3_key):
+        object_summary = self.aws_s3.ObjectSummary(os.getenv('bucket'), s3_key)
         return object_summary.get()['VersionId']
+
+    def _get_layer_version_arn(self, layer_name):
+        response = self.aws_lambda.list_layer_versions(
+            LayerName=layer_name
+        )
+        assert len(response['LayerVersions']) > 0,\
+             'Cannot find the lambda layer ({layer_name}).'.format(layer_name=layer_name)
+        
+        return response['LayerVersions'][0]['LayerVersionArn']
 
     @classmethod
     def deploy(cls):
@@ -185,6 +199,11 @@ class CloudformationStack(object):
                 function_name = value["Properties"]["FunctionName"]
                 function_file = "{function_name}.zip".format(function_name=function_name)
                 function_version = "{function_name}_version".format(function_name=function_name)
+                template["Resources"][key]["Properties"]["Layers"] = [
+                    (
+                        layer if isinstance(layer, dict) else cf._get_layer_version_arn(layer)
+                    ) for layer in template["Resources"][key]["Properties"]["Layers"]
+                ]
                 template["Resources"][key]["Properties"]["Code"] = {
                     "S3Bucket": os.getenv("bucket"),
                     "S3ObjectVersion": os.getenv(function_version, cf._get_object_last_version(function_file)),
@@ -248,4 +267,3 @@ class CloudformationStack(object):
 
 if __name__ == "__main__":
     CloudformationStack.deploy()
-
