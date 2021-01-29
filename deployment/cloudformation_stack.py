@@ -190,7 +190,7 @@ class CloudformationStack(object):
                 logger.info("Upload the lambda layer package.")
 
         # Update the cloudformation stack.
-        stack_name = os.getenv("stack_name")
+        stack_name = sys.argv[-1]
         template = open("{stack_name}.json".format(stack_name=stack_name), "r")
         template = json.load(template)
 
