@@ -126,14 +126,22 @@
         "BillingMode": "PAY_PER_REQUEST",
         "AttributeDefinitions": [
           {
-            "AttributeName": "key",
+            "AttributeName": "setting_id",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "variable",
             "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "key",
+            "AttributeName": "setting_id",
             "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "variable",
+            "KeyType": "RANGE"
           }
         ]
       }

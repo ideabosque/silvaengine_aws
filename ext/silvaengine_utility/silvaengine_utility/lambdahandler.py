@@ -6,6 +6,7 @@ import sys
 sys.path.append('/opt')
 
 import json, os, boto3, traceback
+from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 from decimal import Decimal
 
@@ -54,6 +55,25 @@ class LambdaBase(object):
             return item
 
     @classmethod
+    def get_setting(cls, setting_id):
+        if setting_id == '':
+            return {}
+        try:
+            response = cls.dynamodb.Table("se-configdata").query(
+                KeyConditionExpression=Key('setting_id').eq(setting_id)
+            )
+        except ClientError:
+            raise
+        else:
+            assert response['Count'] > 0, "Cannot find values with the setting_id({0})".format(setting_id)
+            return dict(
+                (
+                    item['variable'], 
+                    item['value']
+                ) for item in response.get("Items")
+            )
+
+    @classmethod
     def get_function(cls, endpoint_id, funct, api_key="#####", method=None):
         # If a task calls this function, the special_connection should be TRUE.
         if endpoint_id != "0":
@@ -84,7 +104,14 @@ class LambdaBase(object):
 
         ## Merge the setting in connection and function
         ## (the setting in the funct of a connection will override the setting in the function).
-        setting = dict(function["config"].get("setting", {}), **functs[0].get("setting", {}))
+        setting = dict(
+            cls.get_setting(
+                function["config"].get("setting")
+            ), 
+            **cls.get_setting(
+                functs[0].get("setting")
+            )
+        )
         
         if method is not None:
             assert method in function["config"]["methods"], \

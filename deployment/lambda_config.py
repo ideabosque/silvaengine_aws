@@ -39,7 +39,7 @@ lambdaConfig = {
             "files": {}
         },
         "silvaengine_microcore_layer": {
-            "update": True,
+            "update": False,
             "packages": [
                 "sample_module",
                 "datawald_interface",
