@@ -5,8 +5,8 @@ from time import sleep
 
 
 # Look for a .env file
-if len(sys.argv) == 2:
-    dotenv.load_dotenv(sys.argv[-1])
+if len(sys.argv) == 3:
+    dotenv.load_dotenv(sys.argv[-2])
 else:
     dotenv.load_dotenv('.env')
 
