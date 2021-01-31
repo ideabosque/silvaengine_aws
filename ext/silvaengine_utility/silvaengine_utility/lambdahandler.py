@@ -356,16 +356,17 @@ class Worker(LambdaBase):
             event.get("funct")
         )
 
-        params = json.loads(event.get("params"), parse_float=Decimal)
-        body = json.loads(event.get("body"), parse_float=Decimal) \
-            if event.get("body") is not None else {}
+        params = event.get('params')
+        body = event.get('body')
+        
         if params is None and body is None:
             return funct()
-        else:
-            params = {
-                k: v for k, v in dict(
-                    ({} if params is None else params),
-                    **body
-                ).items() if v is not None and v != ""
-            }
-            return funct(**params)
+
+        params = dict(
+            (k,v) for k,v in dict(
+                ({} if params is None else json.loads(params,parse_float=Decimal)),
+                **({} if body is None else json.loads(body,parse_float=Decimal))
+            ).items() if v is not None and v != ''
+        )
+
+        return funct(**params)
