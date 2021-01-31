@@ -111,7 +111,7 @@
          "Type":"AWS::Lambda::Function",
          "Properties":{
             "FunctionName":"silvaengine_agenttask",
-            "Handler":"resources.handler",
+            "Handler":"tasks.handler",
             "Layers":[
                {
                   "Ref":"SilvaEngineLayer"

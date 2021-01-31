@@ -319,13 +319,13 @@ class Tasks(LambdaBase):
         except Exception:
             log = traceback.format_exc()
             self.logger.exception(log)
-            Tasks.sns.publish(
-                TopicArn=os.environ["SNSTOPICARN"],
-                Subject=context.invoked_function_arn,
-                MessageStructure="json",
-                Message= json.dumps({"default": log})
-            )
-
+            if 'SNSTOPICARN' in os.environ.keys():
+                Tasks.sns.publish(
+                    TopicArn=os.environ["SNSTOPICARN"],
+                    Subject=context.invoked_function_arn,
+                    MessageStructure="json",
+                    Message= json.dumps({"default": log})
+                )
 
 class Worker(LambdaBase):
 
