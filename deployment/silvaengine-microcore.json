@@ -124,7 +124,8 @@
             }
          },
          "DependsOn":[
-            "SilvaEngineMicroCoreExecRole"
+            "SilvaEngineMicroCoreExecRole",
+            "SilvaEngineMicroCoreLayer"
          ]
       }
    }

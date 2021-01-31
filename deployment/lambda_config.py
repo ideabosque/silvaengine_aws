@@ -7,6 +7,13 @@ lambdaConfig = {
             "package_files": [],
             "files": {}
         },
+        "silvaengine_agenttask": {
+            "update": True,
+            "base": "/taskqueue/agenttask",
+            "packages": [],
+            "package_files": [],
+            "files": {}
+        },
         "silvaengine_microcore": {
             "update": False,
             "base": "/beehive/microcore",
@@ -17,7 +24,7 @@ lambdaConfig = {
     },
     "layers": {
         "silvaengine_layer": {
-            "update": True,
+            "update": False,
             "packages": [
                 "silvaengine_utility",
                 "pynamodb",

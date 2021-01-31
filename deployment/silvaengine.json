@@ -103,7 +103,41 @@
             }
          },
          "DependsOn":[
-            "SilvaEngineExecRole"
+            "SilvaEngineExecRole",
+            "SilvaEngineLayer"
+         ]
+      },
+      "SilvaEngineAgentTask":{
+         "Type":"AWS::Lambda::Function",
+         "Properties":{
+            "FunctionName":"silvaengine_agenttask",
+            "Handler":"resources.handler",
+            "Layers":[
+               {
+                  "Ref":"SilvaEngineLayer"
+               }
+            ],
+            "Role":{
+               "Fn::GetAtt":[
+                  "SilvaEngineExecRole",
+                  "Arn"
+               ]
+            },
+            "Code":{
+               "S3Bucket":"silvaengine-aws",
+               "S3Key":"silvaengine_agenttask.zip"
+            },
+            "Runtime":"python3.7",
+            "Timeout":"25",
+            "Environment":{
+               "Variables":{
+                  "LOGGINGLEVEL":"logging.INFO"
+               }
+            }
+         },
+         "DependsOn":[
+            "SilvaEngineExecRole",
+            "SilvaEngineLayer"
          ]
       },
       "SilvaEngineLayer":{
