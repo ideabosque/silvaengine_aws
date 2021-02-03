@@ -5,3 +5,4 @@ pynamodb
 python-dotenv
 docutils
 wheel
+typing-extensions

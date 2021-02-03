@@ -8,7 +8,7 @@ lambdaConfig = {
             "files": {}
         },
         "silvaengine_agenttask": {
-            "update": True,
+            "update": False,
             "base": "/taskqueue/agenttask",
             "packages": [],
             "package_files": [],
@@ -43,7 +43,9 @@ lambdaConfig = {
             ],
             "package_files": [
             ],
-            "files": {}
+            "files": {
+                "typing_extensions.py": "/opt/awsconsole/silvaengine_aws/deployment/env/lib/python3.7/site-packages"
+            }
         },
         "silvaengine_microcore_layer": {
             "update": False,
