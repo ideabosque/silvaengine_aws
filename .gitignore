@@ -10,4 +10,4 @@ qa/*
 */dist
 .vscode
 */.env
-
+*/se-*.json
