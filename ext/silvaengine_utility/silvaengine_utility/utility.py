@@ -15,7 +15,7 @@ class JSONEncoder(json.JSONEncoder):
             if o % 1 > 0:
                 return float(o)
             else:
-                return str(o)
+                return int(o)
         elif hasattr(o, 'attribute_values'):
             return o.attribute_values
         elif isinstance(o, (datetime, date)):
@@ -41,20 +41,20 @@ class JSONDecoder(json.JSONDecoder):
 
 class Struct(object):
 
-    def __init__(self, d):
+    def __init__(self, **d):
         for a, b in d.items():
             if isinstance(b, (list, tuple)):
-               setattr(self, a, [Struct(x) if isinstance(x, dict) else x for x in b])
+               setattr(self, a, [Struct(**x) if isinstance(x, dict) else x for x in b])
             else:
-               setattr(self, a, Struct(b) if isinstance(b, dict) else b)
+               setattr(self, a, Struct(**b) if isinstance(b, dict) else b)
 
               
 class Utility(object):
 
-    @classmethod
-    def json_dumps(cls, data):
+    @staticmethod
+    def json_dumps(data):
         return json.dumps(data, indent=4, cls=JSONEncoder, ensure_ascii=False)
 
-    @classmethod
-    def json_loads(cls, data):
-        return json.loads(data, cls=JSONDecoder, parse_float=Decimal)
+    @staticmethod
+    def json_loads(data):
+        return json.loads(data, cls=JSONDecoder, parse_float=Decimal, parse_int=Decimal)
