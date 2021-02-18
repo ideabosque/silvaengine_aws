@@ -9,6 +9,7 @@ import json, os, boto3, traceback
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 from decimal import Decimal
+from .utility import Utility
 
 
 class LambdaBase(object):
@@ -163,7 +164,7 @@ class Resources(LambdaBase):
                 invocation_type=function["config"]["functType"]
             )
             return {
-                "statusCode": 200,
+                "statusCode": 500 if funct.find('graphql') != -1 and 'errors' in Utility.json_loads(res).keys() else 200,
                 "headers": {
                     'Access-Control-Allow-Headers': 'Access-Control-Allow-Origin',
                     'Access-Control-Allow-Origin': '*'
