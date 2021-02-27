@@ -210,16 +210,15 @@ class Tasks(LambdaBase):
         return attributes
 
     @classmethod
-    def fetch_queue_messages(cls, queue_name):
+    def fetch_queue_messages(cls, queue_name, logger):
         messages = []
         total_messages = 0
         queue_url = None
 
-        response = cls.sqs.list_queues(QueueNamePrefix=queue_name)
-        if "QueueUrls" in response.keys():
-            queue_url = response["QueueUrls"][0]
+        try:
+            response = cls.sqs.get_queue_url(QueueName=queue_name)
+            queue_url = response['QueueUrl']
 
-        if queue_url is not None:
             total_messages = cls.get_queue_attributes(queue_url=queue_url)["TotalMessages"]
             if total_messages != 0:
                 response = cls.sqs.receive_message(
@@ -227,15 +226,20 @@ class Tasks(LambdaBase):
                     MaxNumberOfMessages=int(os.environ["SQSMAXMSG"]),
                     VisibilityTimeout=600
                 )
-                for message in response['Messages']:
+                for message in response('Messages',[]):
                     messages.append(json.loads(message['Body']))
                     cls.sqs.delete_message(
                         QueueUrl=queue_url,
                         ReceiptHandle=message['ReceiptHandle']
                     )
                     total_messages = total_messages - 1
+                    logger.debug(message['Body'])
             if total_messages == 0:
                 cls.sqs.delete_queue(QueueUrl=queue_url)
+                logger.debug('"{queue_url}" is deleted.'.format(queue_url=queue_url))
+        except ClientError as e:
+            if e.response['Error']['Code'] not in ('AWS.SimpleQueueService.NonExistentQueue'):
+                raise
 
         return (queue_url, messages, total_messages)
 
@@ -269,7 +273,7 @@ class Tasks(LambdaBase):
 
             if queue_name is not None:
                 try:
-                    (queue_url, messages, total_messages) = Tasks.fetch_queue_messages(queue_name)
+                    (queue_url, messages, total_messages) = Tasks.fetch_queue_messages(queue_name, self.logger)
                     
                     if len(messages) > 0:
                         funct = event.get('funct')
@@ -283,17 +287,20 @@ class Tasks(LambdaBase):
                 except Exception:
                     log = traceback.format_exc()
                     self.logger.exception(log)
-                    # sleep(15)
                     Tasks.invoke(
                         context.invoked_function_arn,
                         event
                     )
                     return
 
-                self.logger.info({"queue_url": queue_url, "processed_messages": len(messages), "total_messages": total_messages})
+                self.logger.info('queue_url: {queue_url}, processed_messages: {processed_messages}, total_messages: {total_messages}'.format(
+                        queue_url=queue_url,
+                        processed_messages=len(messages),
+                        total_messages=total_messages
+                    )
+                )
                 if queue_url is not None:
                     if total_messages == 0:
-                        # sleep(15)
                         funct = "updateSyncTask"
                         Tasks.dispatch(endpoint_id, funct, params={"id": queue_name})
                         self.logger.info("endpoint_id: {endpoint_id}, funct: {funct}".format(
@@ -302,7 +309,6 @@ class Tasks(LambdaBase):
                             )
                         )
                     else:
-                        # sleep(5)
                         Tasks.invoke(
                             context.invoked_function_arn,
                             event
