@@ -6,3 +6,5 @@ python-dotenv
 docutils
 wheel
 typing-extensions
+tenacity
+pyathena

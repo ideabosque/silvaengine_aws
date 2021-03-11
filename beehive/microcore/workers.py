@@ -6,7 +6,7 @@ __author__ = 'bibow'
 import sys, os
 sys.path.append('/opt')
 
-from silvaengine_utility import Worker
+from silvaengine_base import Worker
 import logging
 logger = logging.getLogger()
 logger.setLevel(eval(os.environ["LOGGINGLEVEL"]))

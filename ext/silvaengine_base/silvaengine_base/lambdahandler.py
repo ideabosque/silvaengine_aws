@@ -9,7 +9,7 @@ import json, os, boto3, traceback
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 from decimal import Decimal
-from .utility import Utility
+from silvaengine_utility import Utility
 
 
 class LambdaBase(object):

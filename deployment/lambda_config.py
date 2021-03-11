@@ -24,8 +24,9 @@ lambdaConfig = {
     },
     "layers": {
         "silvaengine_layer": {
-            "update": False,
+            "update": True,
             "packages": [
+                "silvaengine_base",
                 "silvaengine_utility",
                 "pynamodb",
                 "dateutil",
@@ -39,7 +40,9 @@ lambdaConfig = {
                 "urllib3",
                 "chardet",
                 "certifi",
-                "idna"
+                "idna",
+                "tenacity",
+                "pyathena"
             ],
             "package_files": [
             ],
