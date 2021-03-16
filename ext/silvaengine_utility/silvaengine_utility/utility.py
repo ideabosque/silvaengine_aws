@@ -3,7 +3,7 @@
 from __future__ import print_function
 __author__ = 'bibow'
 
-import json
+import json, dateutil
 from decimal import Decimal
 from datetime import datetime, date
 
@@ -31,13 +31,18 @@ class JSONDecoder(json.JSONDecoder):
         json.JSONDecoder.__init__(self, object_hook=self.object_hook, *args, **kwargs)
 
     def object_hook(self, o):
-        if '_type' not in o:
-            return o
-        type = o['_type']
-        if type in ['bytes', 'bytearray']:
+        if o.get('_type') in ['bytes', 'bytearray']:
             return str(o['value'])
-        return o
+        
+        for (key, value) in o.items():
+            try:
+                if not isinstance(value, str):
+                    continue
+                o[key] = dateutil.parser.parse(value)
+            except (ValueError, AttributeError):
+                pass
 
+        return o
 
 class Struct(object):
 
