@@ -45,9 +45,9 @@ lambdaConfig = {
                 "pyathena"
             ],
             "package_files": [
+                "typing_extensions.py"
             ],
             "files": {
-                "typing_extensions.py": "/opt/awsconsole/silvaengine_aws/deployment/env/lib/python3.7/site-packages"
             }
         },
         "silvaengine_microcore_layer": {

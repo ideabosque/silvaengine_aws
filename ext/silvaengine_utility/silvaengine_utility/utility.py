@@ -3,10 +3,12 @@
 from __future__ import print_function
 __author__ = 'bibow'
 
-import json, dateutil
+import json, dateutil, re
 from decimal import Decimal
 from datetime import datetime, date
 
+datetime_format = "%Y-%m-%dT%H:%M:%S"
+datetime_format_regex = re.compile(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$')
 
 class JSONEncoder(json.JSONEncoder):
     
@@ -19,7 +21,7 @@ class JSONEncoder(json.JSONEncoder):
         elif hasattr(o, 'attribute_values'):
             return o.attribute_values
         elif isinstance(o, (datetime, date)):
-            return o.strftime("%Y-%m-%d %H:%M:%S")
+            return o.strftime(datetime_format)
         elif isinstance(o, (bytes, bytearray)):
             return str(o)
         else:
@@ -30,7 +32,7 @@ class JSONDecoder(json.JSONDecoder):
     def __init__(self, *args, **kwargs):
         json.JSONDecoder.__init__(self, object_hook=self.object_hook, *args, **kwargs)
 
-    def object_hook(self, o):
+    def object_hook(self, o):   # pylint: disable=E0202
         if o.get('_type') in ['bytes', 'bytearray']:
             return str(o['value'])
         
@@ -38,7 +40,8 @@ class JSONDecoder(json.JSONDecoder):
             try:
                 if not isinstance(value, str):
                     continue
-                o[key] = dateutil.parser.parse(value)
+                if datetime_format_regex.match(value):
+                    o[key] = dateutil.parser.parse(value)
             except (ValueError, AttributeError):
                 pass
 
@@ -61,5 +64,7 @@ class Utility(object):
         return json.dumps(data, indent=4, cls=JSONEncoder, ensure_ascii=False)
 
     @staticmethod
-    def json_loads(data):
-        return json.loads(data, cls=JSONDecoder, parse_float=Decimal, parse_int=Decimal)
+    def json_loads(data, parser_number=True):
+        if parser_number:
+            return json.loads(data, cls=JSONDecoder, parse_float=Decimal, parse_int=Decimal)
+        return json.loads(data, cls=JSONDecoder)
