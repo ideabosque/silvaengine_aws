@@ -94,7 +94,7 @@
                "S3Bucket":"silvaengine-aws",
                "S3Key":"silvaengine_area_resource.zip"
             },
-            "Runtime":"python3.7",
+            "Runtime":"python3.8",
             "Timeout":"25",
             "Environment":{
                "Variables":{
@@ -127,7 +127,7 @@
                "S3Bucket":"silvaengine-aws",
                "S3Key":"silvaengine_agenttask.zip"
             },
-            "Runtime":"python3.7",
+            "Runtime":"python3.8",
             "Timeout":"25",
             "Environment":{
                "Variables":{

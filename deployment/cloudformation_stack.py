@@ -95,7 +95,7 @@ class CloudformationStack(object):
             )
         for f in package_files:
             fzip.write(
-                "{root_path}/deployment/{site_packages}/{file}".format(
+                "{site_packages}/{file}".format(
                     root_path=os.getenv('root_path'),
                     site_packages=os.getenv('site_packages'),
                     file=f
@@ -120,7 +120,7 @@ class CloudformationStack(object):
             )
         for f in package_files:
             fzip.write(
-                "{root_path}/deployment/{site_packages}/{file}".format(
+                "{site_packages}/{file}".format(
                     root_path=os.getenv('root_path'),
                     site_packages=os.getenv('site_packages'),
                     file=f
