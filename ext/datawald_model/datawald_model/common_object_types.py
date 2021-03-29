@@ -16,3 +16,9 @@ class TransactionStatusInputType(InputObjectType):
     tgt_id = String(required=True)
     tx_note = String(required=True)
     tx_status = String(required=True)
+
+
+class TransactionInputType(InputObjectType):
+    source = String(required=True)
+    src_id = String(required=True)
+    data = String()

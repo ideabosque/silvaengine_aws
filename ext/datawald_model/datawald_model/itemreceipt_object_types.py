@@ -24,7 +24,8 @@ class ShipToType(ObjectType):
 
 
 class ItemReceiptDataType(ObjectType):
-    itemreceipt_id = String()
+    tgt_id = String()
+    updated_at = DateTime()
     internal_id = String()
     items = List(ItemReceiptItemType)
     key = String()
@@ -48,11 +49,3 @@ class ItemReceiptType(ObjectType):
     updated_at = DateTime()
     tx_note = String()
     tx_status = String()
-
-
-
-
-class ItemReceiptInputType(InputObjectType):
-    source = String(required=True)
-    src_id = String(required=True)
-    data = String()

@@ -31,6 +31,9 @@ class AddressesType(ObjectType):
 
 
 class OrderDataType(ObjectType):
+    tgt_id = String()
+    updated_at = DateTime()
+    order_status = String()
     addresses = Field(AddressesType)
     items = List(OrderItemType)
 
@@ -47,12 +50,3 @@ class OrderType(ObjectType):
     updated_at = DateTime()
     tx_note = String()
     tx_status = String()
-
-
-
-
-class OrderInputType(InputObjectType):
-    source = String(required=True)
-    src_id = String(required=True)
-    order_status = String()
-    data = String()

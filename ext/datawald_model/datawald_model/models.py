@@ -10,17 +10,23 @@ from pynamodb.attributes import (
 from pynamodb.indexes import GlobalSecondaryIndex, LocalSecondaryIndex, AllProjection
 
 
-class SourceSrcIdIndex(GlobalSecondaryIndex):
+class BaseGlobalSecondaryIndex(GlobalSecondaryIndex):
     """
     This class represents a global secondary index
     """
     class Meta:
         # index_name is optional, but can be provided to override the default name
-        index_name = 'source-src_id-index'
-        read_capacity_units = 2
-        write_capacity_units = 1
+        billing_mode = 'PAY_PER_REQUEST'
         # All attributes are projected
         projection = AllProjection()
+
+class SourceSrcIdIndex(BaseGlobalSecondaryIndex):
+    """
+    This class represents a global secondary index
+    """
+    class Meta(BaseGlobalSecondaryIndex.Meta):
+        # index_name is optional, but can be provided to override the default name
+        index_name = 'source-src_id-index'
     # This attribute is the hash key for the index
     # Note that this attribute must also exist
     # in the model
@@ -28,17 +34,10 @@ class SourceSrcIdIndex(GlobalSecondaryIndex):
     src_id  = UnicodeAttribute(range_key=True)
 
 
-class SourceSKUIndex(GlobalSecondaryIndex):
-    """
-    This class represents a global secondary index
-    """
-    class Meta:
+class SourceSKUIndex(BaseGlobalSecondaryIndex):
+    class Meta(BaseGlobalSecondaryIndex.Meta):
         # index_name is optional, but can be provided to override the default name
         index_name = 'source-sku-index'
-        read_capacity_units = 2
-        write_capacity_units = 1
-        # All attributes are projected
-        projection = AllProjection()
     # This attribute is the hash key for the index
     # Note that this attribute must also exist
     # in the model
@@ -46,17 +45,10 @@ class SourceSKUIndex(GlobalSecondaryIndex):
     sku  = UnicodeAttribute(range_key=True)
 
 
-class SourceIdentityIndex(GlobalSecondaryIndex):
-    """
-    This class represents a global secondary index
-    """
-    class Meta:
+class SourceIdentityIndex(BaseGlobalSecondaryIndex):
+    class Meta(BaseGlobalSecondaryIndex.Meta):
         # index_name is optional, but can be provided to override the default name
         index_name = 'source-identity-index'
-        read_capacity_units = 2
-        write_capacity_units = 1
-        # All attributes are projected
-        projection = AllProjection()
     # This attribute is the hash key for the index
     # Note that this attribute must also exist
     # in the model
@@ -66,8 +58,12 @@ class SourceIdentityIndex(GlobalSecondaryIndex):
 
 class BaseModel(Model):
     class Meta:
-        region = 'us-west-2'
         billing_mode = 'PAY_PER_REQUEST'
+    
+
+class EntityBaseModel(BaseModel):
+    class Meta(BaseModel.Meta):
+        pass
     id = UnicodeAttribute(hash_key=True)
     source = UnicodeAttribute()
     created_at = UTCDateTimeAttribute()
@@ -76,8 +72,8 @@ class BaseModel(Model):
     tx_status = UnicodeAttribute()
 
 
-class TransactionModel(BaseModel):
-    class Meta(BaseModel.Meta):
+class TransactionModel(EntityBaseModel):
+    class Meta(EntityBaseModel.Meta):
         table_name = 'transaction'
     src_id = UnicodeAttribute()
     tgt_id = UnicodeAttribute(default='#####')
@@ -87,8 +83,8 @@ class TransactionModel(BaseModel):
     source_index = SourceSrcIdIndex()
 
 
-class ProductModel(BaseModel):
-    class Meta(BaseModel.Meta):
+class ProductModel(EntityBaseModel):
+    class Meta(EntityBaseModel.Meta):
         table_name = 'product'
     sku = UnicodeAttribute()
     tgt_id = UnicodeAttribute(default='#####')
@@ -99,8 +95,8 @@ class ProductModel(BaseModel):
     source_index = SourceSKUIndex()
 
 
-class ProductExtModel(Model):
-    class Meta(BaseModel.Meta):
+class ProductExtModel(EntityBaseModel):
+    class Meta(EntityBaseModel.Meta):
         table_name = 'productext'
     sku = UnicodeAttribute()
     tgt_id = UnicodeAttribute(default='#####')
@@ -109,8 +105,8 @@ class ProductExtModel(Model):
     source_index = SourceSKUIndex()
 
 
-class ProductImageGalleryModel(Model):
-    class Meta(BaseModel.Meta):
+class ProductImageGalleryModel(EntityBaseModel):
+    class Meta(EntityBaseModel.Meta):
         table_name = 'productimagegallery'
     sku = UnicodeAttribute()
     tgt_id = UnicodeAttribute(default='#####')
@@ -118,8 +114,8 @@ class ProductImageGalleryModel(Model):
     source_index = SourceSKUIndex()
 
 
-class BusinessEntityModel(Model):
-    class Meta(BaseModel.Meta):
+class BusinessEntityModel(EntityBaseModel):
+    class Meta(EntityBaseModel.Meta):
         table_name = 'businessentity'
     identity = UnicodeAttribute()
     tgt_id = UnicodeAttribute(default='#####')
@@ -137,10 +133,8 @@ class SyncControlEntityMap(MapAttribute):
     updated_at = UnicodeAttribute()
 
 
-class SyncControl(Model):
-    class Meta:
-        region = 'us-west-2'
-        billing_mode = 'PAY_PER_REQUEST'
+class SyncControl(BaseModel):
+    class Meta(BaseModel.Meta):
         table_name = 'synccontrol'
     id = UnicodeAttribute(hash_key=True)
     frontend = UnicodeAttribute()
