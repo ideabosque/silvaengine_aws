@@ -12,6 +12,7 @@ class InputType(InputObjectType):
 
 
 class TransactionStatusInputType(InputObjectType):
+    source = String(required=True)
     id = String(required=True)
     tgt_id = String(required=True)
     tx_note = String(required=True)

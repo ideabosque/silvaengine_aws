@@ -15,7 +15,7 @@ from graphene import Field, ObjectType, Schema, Mutation, Boolean
 from silvaengine_utility import Utility
 
 
-class BackOffice(object):
+class Interface(object):
 
     def __init__(self, logger, **setting):
         self.logger = logger
@@ -29,17 +29,19 @@ class BackOffice(object):
             BaseModel.Meta.aws_secret_access_key = setting.get(
                 'aws_secret_access_key')
 
-        self.order_status = setting.get("order_status", [])
-
-        self.order_object_types_module = __import__(
+    @property
+    def type_class(self):
+        order_object_types_module = __import__(
             self.setting.get("order_object_types_module", "datawald_model.order_object_types")
         )
-        self.order_type_class = getattr(self.order_object_types_module, 'OrderType')
-        
-        self.itemreceipt_object_types_module = __import__(
+        itemreceipt_object_types_module = __import__(
             self.setting.get("itemreceipt_object_types_module", "datawald_model.itemreceipt_object_types")
         )
-        self.itemreceipt_type_class = getattr(self.itemreceipt_object_types_module, 'ItemReceiptType')
+
+        return {
+            'order': getattr(order_object_types_module, 'OrderType'),
+            'itemreceipt': getattr(itemreceipt_object_types_module, 'ItemReceiptType')
+        }
 
     def _get_transaction(self, source, src_id, tx_type):
         count = TransactionModel.source_index.count(
@@ -59,15 +61,12 @@ class BackOffice(object):
 
     def get_transaction(self, source, src_id, tx_type=None):
         transaction = self._get_transaction(source, src_id, tx_type)
-        if tx_type == "order":
-            transaction_type_class = self.order_type_class
-        elif tx_type == "itemreceipt":
-            transaction_type_class = self.itemreceipt_type_class
+        type_class = self.type_class[tx_type]
 
         if transaction is None:
             return None
 
-        return transaction_type_class(**Utility.json_loads(
+        return type_class(**Utility.json_loads(
                 Utility.json_dumps(transaction.__dict__['attribute_values'])
             )
         )
@@ -81,13 +80,15 @@ class BackOffice(object):
 
         count = TransactionModel.source_index.count(
             transaction["source"], 
-            TransactionModel.src_id==transaction["src_id"]
+            TransactionModel.src_id==transaction["src_id"],
+            TransactionModel.type==tx_type
         )
 
         if count >= 1:
             results = TransactionModel.source_index.query(
                 transaction["source"], 
-                TransactionModel.src_id==transaction["src_id"]
+                TransactionModel.src_id==transaction["src_id"],
+                TransactionModel.type==tx_type
             )
             _transaction = results.next()
             _id = _transaction.id
@@ -114,11 +115,11 @@ class BackOffice(object):
                         TransactionModel.tx_status.set(tx_status)
                     ]
                 )
-        
+        self.logger.info(transaction)
         transaction_model = TransactionModel(
+            transaction["source"], 
             _id,
             **{
-                'source': transaction["source"],
                 'src_id': transaction['src_id'],
                 'type': tx_type,
                 'data': transaction["data"],
@@ -132,8 +133,8 @@ class BackOffice(object):
 
         return transaction_model.save()
 
-    def update_transaction_status(self, id, transaction_status):
-        transaction_model = TransactionModel.get(id)
+    def update_transaction_status(self, source, id, transaction_status):
+        transaction_model = TransactionModel.get(source, id)
 
         return transaction_model.update(
             actions=[
@@ -144,12 +145,12 @@ class BackOffice(object):
             ]
         )
 
-    def backoffice_graphql(self, **params):
+    def interface_graphql(self, **params):
         outer = self
 
         class Query(ObjectType):
-            order = Field(self.order_type_class, input=InputType(required=True))
-            itemreceipt = Field(self.itemreceipt_type_class, input=InputType(required=True))
+            order = Field(self.type_class['order'], input=InputType(required=True))
+            itemreceipt = Field(self.type_class['itemreceipt'], input=InputType(required=True))
 
             def resolve_order(self, info, input):
                 return outer.get_transaction(input.source, input.src_id, tx_type="order")
@@ -163,7 +164,7 @@ class BackOffice(object):
             class Arguments:
                 order_input = TransactionInputType(required=True)
             
-            order = Field(self.order_type_class)
+            order = Field(self.type_class['order'])
             @staticmethod
             def mutate(root, info, order_input=None):
                 try:
@@ -187,7 +188,7 @@ class BackOffice(object):
             class Arguments:
                 itemreceipt_input = TransactionInputType(required=True)
             
-            itemreceipt = Field(self.itemreceipt_type_class)
+            itemreceipt = Field(self.type_class['itemreceipt'])
             @staticmethod
             def mutate(root, info, itemreceipt_input=None):
                 try:
@@ -216,6 +217,7 @@ class BackOffice(object):
             def mutate(root, info, transaction_status_input=None):
                 try:
                     self.update_transaction_status(
+                        transaction_status_input.source,
                         transaction_status_input.id,
                         {
                             "tgt_id": transaction_status_input.tgt_id,
@@ -238,7 +240,7 @@ class BackOffice(object):
 
         ## Mutation ##
 
-        schema = Schema(query=Query, mutation=Mutations, types=[self.order_type_class, self.itemreceipt_type_class])
+        schema = Schema(query=Query, mutation=Mutations, types=[value for value in self.type_class.values()])
 
         variables = params.get("variables", {})
         query = params.get("query")
@@ -254,4 +256,3 @@ class BackOffice(object):
         if (result.errors != None):
             response['errors'] = [str(error) for error in result.errors]
         return Utility.json_dumps(response)
-

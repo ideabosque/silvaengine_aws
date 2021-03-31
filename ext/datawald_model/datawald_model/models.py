@@ -10,6 +10,16 @@ from pynamodb.attributes import (
 from pynamodb.indexes import GlobalSecondaryIndex, LocalSecondaryIndex, AllProjection
 
 
+class BaseLocalSecondaryIndex(LocalSecondaryIndex):
+    """
+    This class represents a local secondary index
+    """
+    class Meta:
+        billing_mode = 'PAY_PER_REQUEST'
+        # All attributes are projected
+        projection = AllProjection()
+
+
 class BaseGlobalSecondaryIndex(GlobalSecondaryIndex):
     """
     This class represents a global secondary index
@@ -20,40 +30,63 @@ class BaseGlobalSecondaryIndex(GlobalSecondaryIndex):
         # All attributes are projected
         projection = AllProjection()
 
-class SourceSrcIdIndex(BaseGlobalSecondaryIndex):
+
+class SourceSrcIdIndex(BaseLocalSecondaryIndex):
     """
     This class represents a global secondary index
     """
-    class Meta(BaseGlobalSecondaryIndex.Meta):
+    class Meta(BaseLocalSecondaryIndex.Meta):
         # index_name is optional, but can be provided to override the default name
         index_name = 'source-src_id-index'
     # This attribute is the hash key for the index
     # Note that this attribute must also exist
     # in the model
-    source  = UnicodeAttribute(hash_key=True)
-    src_id  = UnicodeAttribute(range_key=True)
+    source = UnicodeAttribute(hash_key=True)
+    src_id = UnicodeAttribute(range_key=True)
 
 
-class SourceSKUIndex(BaseGlobalSecondaryIndex):
-    class Meta(BaseGlobalSecondaryIndex.Meta):
+class SourceSKUIndex(BaseLocalSecondaryIndex):
+    class Meta(BaseLocalSecondaryIndex.Meta):
         # index_name is optional, but can be provided to override the default name
         index_name = 'source-sku-index'
     # This attribute is the hash key for the index
     # Note that this attribute must also exist
     # in the model
-    source  = UnicodeAttribute(hash_key=True)
-    sku  = UnicodeAttribute(range_key=True)
+    source = UnicodeAttribute(hash_key=True)
+    sku = UnicodeAttribute(range_key=True)
 
 
-class SourceIdentityIndex(BaseGlobalSecondaryIndex):
-    class Meta(BaseGlobalSecondaryIndex.Meta):
+class SourceIdentityIndex(BaseLocalSecondaryIndex):
+    class Meta(BaseLocalSecondaryIndex.Meta):
         # index_name is optional, but can be provided to override the default name
         index_name = 'source-identity-index'
     # This attribute is the hash key for the index
     # Note that this attribute must also exist
     # in the model
-    source  = UnicodeAttribute(hash_key=True)
-    identity  = UnicodeAttribute(range_key=True)
+    source = UnicodeAttribute(hash_key=True)
+    identity = UnicodeAttribute(range_key=True)
+
+
+class TaskFrontendIndex(BaseLocalSecondaryIndex):
+    class Meta(BaseLocalSecondaryIndex.Meta):
+        # index_name is optional, but can be provided to override the default name
+        index_name = 'task-frontend-index'
+    # This attribute is the hash key for the index
+    # Note that this attribute must also exist
+    # in the model
+    task = UnicodeAttribute(hash_key=True)
+    frontend  = UnicodeAttribute(range_key=True)
+
+
+class TaskBackOfficeIndex(BaseLocalSecondaryIndex):
+    class Meta(BaseLocalSecondaryIndex.Meta):
+        # index_name is optional, but can be provided to override the default name
+        index_name = 'task-backoffice-index'
+    # This attribute is the hash key for the index
+    # Note that this attribute must also exist
+    # in the model
+    task = UnicodeAttribute(hash_key=True)
+    backoffice = UnicodeAttribute(range_key=True)
 
 
 class BaseModel(Model):
@@ -64,8 +97,8 @@ class BaseModel(Model):
 class EntityBaseModel(BaseModel):
     class Meta(BaseModel.Meta):
         pass
-    id = UnicodeAttribute(hash_key=True)
-    source = UnicodeAttribute()
+    source = UnicodeAttribute(hash_key=True)
+    id = UnicodeAttribute(range_key=True)
     created_at = UTCDateTimeAttribute()
     updated_at = UTCDateTimeAttribute()
     tx_note = UnicodeAttribute()
@@ -74,7 +107,7 @@ class EntityBaseModel(BaseModel):
 
 class TransactionModel(EntityBaseModel):
     class Meta(EntityBaseModel.Meta):
-        table_name = 'transaction'
+        table_name = 'dw-transaction'
     src_id = UnicodeAttribute()
     tgt_id = UnicodeAttribute(default='#####')
     type = UnicodeAttribute()
@@ -136,12 +169,13 @@ class SyncControlEntityMap(MapAttribute):
 class SyncControl(BaseModel):
     class Meta(BaseModel.Meta):
         table_name = 'synccontrol'
-    id = UnicodeAttribute(hash_key=True)
+    task = UnicodeAttribute(hash_key=True)
+    id = UnicodeAttribute(range_key=True)
     frontend = UnicodeAttribute()
     backoffice = UnicodeAttribute()
-    cut_dt = UTCDateTimeAttribute()
-    start_dt = UTCDateTimeAttribute()
-    end_dt = UTCDateTimeAttribute()
+    cut_date = UTCDateTimeAttribute()
+    start_date = UTCDateTimeAttribute()
+    end_date = UTCDateTimeAttribute()
     offset = NumberAttribute()
     store_code = UnicodeAttribute()
     table = UnicodeAttribute()
@@ -149,3 +183,5 @@ class SyncControl(BaseModel):
     sync_note = UnicodeAttribute()
     sync_status = UnicodeAttribute()
     entities = ListAttribute(of=SyncControlEntityMap)
+    frontend_index = TaskFrontendIndex()
+    backoffice_index = TaskBackOfficeIndex()

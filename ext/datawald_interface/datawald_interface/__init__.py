@@ -3,6 +3,6 @@
 __author__ = 'bibow'
 
 __all__ = [
-    "backoffice"
+    "interface"
 ]
-from .backoffice import BackOffice
+from .interface import Interface
