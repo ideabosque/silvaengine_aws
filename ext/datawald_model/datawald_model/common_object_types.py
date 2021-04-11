@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-__author__ = 'bibow'
+
+__author__ = "bibow"
 
 from graphene import ObjectType, InputObjectType, String, Decimal, DateTime, List, Field
 

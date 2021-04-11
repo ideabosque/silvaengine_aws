@@ -5,22 +5,22 @@ lambdaConfig = {
             "base": "/api",
             "packages": [],
             "package_files": [],
-            "files": {}
+            "files": {},
         },
         "silvaengine_agenttask": {
             "update": False,
             "base": "/taskqueue/agenttask",
             "packages": [],
             "package_files": [],
-            "files": {}
+            "files": {},
         },
         "silvaengine_microcore": {
             "update": False,
             "base": "/beehive/microcore",
             "packages": [],
             "package_files": [],
-            "files": {}
-        }
+            "files": {},
+        },
     },
     "layers": {
         "silvaengine_layer": {
@@ -42,24 +42,16 @@ lambdaConfig = {
                 "certifi",
                 "idna",
                 "tenacity",
-                "pyathena"
+                "pyathena",
             ],
-            "package_files": [
-                "typing_extensions.py"
-            ],
-            "files": {
-            }
+            "package_files": ["typing_extensions.py"],
+            "files": {},
         },
         "silvaengine_microcore_layer": {
             "update": False,
-            "packages": [
-                "sample_module",
-                "datawald_interface",
-                "datawald_model"
-            ],
-            "package_files": [
-            ],
-            "files": {}
-        }
-    }
+            "packages": ["sample_module", "datawald_interface", "datawald_model"],
+            "package_files": [],
+            "files": {},
+        },
+    },
 }
