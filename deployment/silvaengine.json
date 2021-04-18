@@ -98,7 +98,8 @@
             "Timeout":"25",
             "Environment":{
                "Variables":{
-                  "LOGGINGLEVEL":"logging.INFO"
+                  "LOGGINGLEVEL":"logging.INFO",
+                  "REGIONNAME":"us-west-2"
                }
             }
          },
@@ -131,7 +132,8 @@
             "Timeout":"25",
             "Environment":{
                "Variables":{
-                  "LOGGINGLEVEL":"logging.INFO"
+                  "LOGGINGLEVEL":"logging.INFO",
+                  "REGIONNAME":"us-west-2"
                }
             }
          },
@@ -271,6 +273,58 @@
                {
                   "AttributeName":"function",
                   "KeyType":"RANGE"
+               }
+            ]
+         },
+         "DependsOn":[
+            "SilvaEngineConnections"
+         ]
+      },
+      "SilvaEnginePermissions":{
+         "Type":"AWS::DynamoDB::Table",
+         "Properties":{
+            "TableName":"se-permissions",
+            "BillingMode":"PAY_PER_REQUEST",
+            "AttributeDefinitions":[
+               {
+                  "AttributeName":"permission_id",
+                  "AttributeType":"S"
+               },
+               {
+                  "AttributeName":"service",
+                  "AttributeType":"S"
+               }
+            ],
+            "KeySchema":[
+               {
+                  "AttributeName":"permission_id",
+                  "KeyType":"HASH"
+               },
+               {
+                  "AttributeName":"service",
+                  "KeyType":"RANGE"
+               }
+            ]
+         },
+         "DependsOn":[
+            "SilvaEngineConnections"
+         ]
+      },
+      "SilvaEngineRoles":{
+         "Type":"AWS::DynamoDB::Table",
+         "Properties":{
+            "TableName":"se-roles",
+            "BillingMode":"PAY_PER_REQUEST",
+            "AttributeDefinitions":[
+               {
+                  "AttributeName":"role_id",
+                  "AttributeType":"S"
+               }
+            ],
+            "KeySchema":[
+               {
+                  "AttributeName":"role_id",
+                  "KeyType":"HASH"
                }
             ]
          },
