@@ -42,9 +42,17 @@ lambdaConfig = {
                 "certifi",
                 "idna",
                 "tenacity",
+                "dotenv",
+                "pymysql",
                 "pyathena",
+                "singledispatch",
+                "greenlet",
+                "importlib-metadata",
+                "sqlalchemy",
+                "graphene_sqlalchemy",
+                "graphene_sqlalchemy_filter"
             ],
-            "package_files": ["typing_extensions.py"],
+            "package_files": ["typing_extensions.py","zipp.py"],
             "files": {},
         },
         "silvaengine_microcore_layer": {
