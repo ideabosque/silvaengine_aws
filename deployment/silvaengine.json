@@ -420,13 +420,17 @@
             "ResourceId":{
                "Ref":"AreaProxyResource"
             },
+            "RequestParameters":{
+               "method.request.header.X-Requested-With":false,
+               "method.request.header.X-CSRF-TOKEN":false
+            },
             "HttpMethod":"OPTIONS",
             "Integration":{
                "IntegrationResponses":[
                   {
                      "StatusCode":200,
                      "ResponseParameters":{
-                        "method.response.header.Access-Control-Allow-Headers":"'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                        "method.response.header.Access-Control-Allow-Headers":"'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Requested-With,X-CSRF-TOKEN'",
                         "method.response.header.Access-Control-Allow-Methods":"'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
                         "method.response.header.Access-Control-Allow-Origin":"'*'"
                      },
