@@ -281,10 +281,10 @@ class Interface(object):
         variables = params.get("variables", {})
         query = params.get("query")
         if query is not None:
-            result = schema.execute(query, variables=variables)
+            result = schema.execute(query, variable_values=variables)
         mutation = params.get("mutation")
         if mutation is not None:
-            result = schema.execute(mutation, variables=variables)
+            result = schema.execute(mutation, variable_values=variables)
 
         response = {
             "data": dict(result.data) if result.data != None else None,

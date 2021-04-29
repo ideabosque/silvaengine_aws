@@ -30,7 +30,7 @@ logger = logging.getLogger()
 
 # Helper class to convert a DynamoDB item to JSON.
 class JSONEncoder(json.JSONEncoder):
-    def default(self, o):
+    def default(self, o):   # pylint: disable=method-hidden
         if isinstance(o, Decimal):
             if o % 1 > 0:
                 return float(o)
@@ -229,6 +229,8 @@ class CloudformationStack(object):
                     ),
                     "S3Key": layer_file,
                 }
+            elif value["Type"] == "AWS::IAM::Role" and os.getenv("iam_role_name"):
+                template["Resources"][key]["Properties"]["RoleName"] = os.getenv("iam_role_name")
 
         params = {
             "StackName": stack_name,

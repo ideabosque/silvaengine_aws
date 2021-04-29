@@ -50,9 +50,12 @@ lambdaConfig = {
                 "importlib-metadata",
                 "sqlalchemy",
                 "graphene_sqlalchemy",
-                "graphene_sqlalchemy_filter"
+                "graphene_sqlalchemy_filter",
+                "pytzdata",
+                "promise",
+                "pendulum",
             ],
-            "package_files": ["typing_extensions.py","zipp.py"],
+            "package_files": ["typing_extensions.py", "zipp.py"],
             "files": {},
         },
         "silvaengine_microcore_layer": {

@@ -24,6 +24,7 @@ class Control(object):
         _entity_model = {"transaction": TransactionModel}
         return _entity_model.get(table)
 
+    # Add GraphQL Query.
     def get_task(self, table, source, id):
         entity_model = self.entity_model(table)
         assert entity_model is not None, f"The table ({table}) is not supported."
@@ -39,6 +40,7 @@ class Control(object):
             "ready": 1 if entity.tx_status != "N" else 0,
         }
 
+    # Add GraphQL Query.
     def get_cut_date(self, source, task):
         cut_date = os.environ["DEFAULTCUTDATE"]
         offset = 0
@@ -71,6 +73,7 @@ class Control(object):
         ):
             sync_task.delete(SyncControlModel.id != id)
 
+    # Add GraphQL Mutation.
     def insert_sync_control(self, source, target, task, table, sync_task):
         id = str(uuid.uuid1().int >> 64)
         sync_control_model = SyncControlModel(
@@ -100,6 +103,7 @@ class Control(object):
 
         return sync_control_model
 
+    # Add GraphQL Mutation.
     def update_sync_control(self, task, id, entities):
         sync_status = "Completed"
         if len(list(filter(lambda x: x["task_status"] == "F", entities))) > 0:
@@ -118,9 +122,11 @@ class Control(object):
             ]
         )
 
+    # Add GraphQL Query.
     def get_sync_task(self, task, id):
         return SyncControlModel.get(task, id)
 
+    # Add GraphQL Mutation.
     def del_sync_task(self, task, id):
         sync_task = SyncControlModel.get(task, id)
         sync_task.delete()
