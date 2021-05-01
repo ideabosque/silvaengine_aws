@@ -10,7 +10,9 @@ if len(sys.argv) == 3:
 else:
     dotenv.load_dotenv(".env")
 
-lambda_config = json.load(open("lambda_config.json"))
+lambda_config = json.load(open("lambda_config.json", "r"))
+root_path = os.getenv("root_path")
+site_packages = os.getenv("site_packages")
 
 import logging
 
@@ -77,48 +79,36 @@ class CloudformationStack(object):
 
     def pack_aws_lambda(self, lambda_file, base, packages, package_files=[], files={}):
         fzip = zipfile.ZipFile(lambda_file, "w", zipfile.ZIP_DEFLATED)
-        base = "{root_path}/{base}".format(root_path=os.getenv("root_path"), base=base)
+        base = f"{root_path}/{base}"
         self.zip_dir(base, fzip, is_package=False)
         for package in packages:
             self.zip_dir(
-                "{site_packages}/{package}".format(
-                    site_packages=os.getenv("site_packages"), package=package
-                ),
+                f"{site_packages}/{package}",
                 fzip,
             )
         for f in package_files:
             fzip.write(
-                "{site_packages}/{file}".format(
-                    root_path=os.getenv("root_path"),
-                    site_packages=os.getenv("site_packages"),
-                    file=f,
-                ),
+                f"{site_packages}/{f}",
                 f,
             )
         for f, path in files.items():
-            fzip.write("{path}/{file}".format(path=path, file=f), f)
+            fzip.write(f"{path}/{f}", f)
         fzip.close()
 
     def pack_aws_lambda_layer(self, layer_file, packages, package_files=[], files={}):
         fzip = zipfile.ZipFile(layer_file, "w", zipfile.ZIP_DEFLATED)
         for package in packages:
             self.zip_dir(
-                "{site_packages}/{package}".format(
-                    site_packages=os.getenv("site_packages"), package=package
-                ),
+                f"{site_packages}/{package}",
                 fzip,
             )
         for f in package_files:
             fzip.write(
-                "{site_packages}/{file}".format(
-                    root_path=os.getenv("root_path"),
-                    site_packages=os.getenv("site_packages"),
-                    file=f,
-                ),
+                f"{site_packages}/{f}",
                 f,
             )
         for f, path in files.items():
-            fzip.write("{path}/{file}".format(path=path, file=f), f)
+            fzip.write(f"{path}/{f}", f)
         fzip.close()
 
     def upload_aws_s3_bucket(self, lambda_file, bucket):
@@ -144,7 +134,7 @@ class CloudformationStack(object):
         response = self.aws_lambda.list_layer_versions(LayerName=layer_name)
         assert (
             len(response["LayerVersions"]) > 0
-        ), "Cannot find the lambda layer ({layer_name}).".format(layer_name=layer_name)
+        ), f"Cannot find the lambda layer ({layer_name})."
 
         return response["LayerVersions"][0]["LayerVersionArn"]
 
@@ -154,7 +144,7 @@ class CloudformationStack(object):
         # Package and upload the code.
         for name, funct in lambda_config["functions"].items():
             if funct["update"]:
-                lambda_file = "{function_name}.zip".format(function_name=name)
+                lambda_file = f"{name}.zip"
                 cf.pack_aws_lambda(
                     lambda_file,
                     funct["base"],
@@ -167,7 +157,7 @@ class CloudformationStack(object):
 
         for name, layer in lambda_config["layers"].items():
             if layer["update"]:
-                layer_file = "{layer_name}.zip".format(layer_name=name)
+                layer_file = f"{name}.zip"
                 cf.pack_aws_lambda_layer(
                     layer_file,
                     layer["packages"],
@@ -179,18 +169,13 @@ class CloudformationStack(object):
 
         # Update the cloudformation stack.
         stack_name = sys.argv[-1]
-        template = open("{stack_name}.json".format(stack_name=stack_name), "r")
-        template = json.load(template)
+        template = json.load(open(f"{stack_name}.json", "r"))
 
         for key, value in template["Resources"].items():
             if value["Type"] == "AWS::Lambda::Function":
                 function_name = value["Properties"]["FunctionName"]
-                function_file = "{function_name}.zip".format(
-                    function_name=function_name
-                )
-                function_version = "{function_name}_version".format(
-                    function_name=function_name
-                )
+                function_file = f"{function_name}.zip"
+                function_version = f"{function_name}_version"
                 template["Resources"][key]["Properties"]["Layers"] = [
                     (
                         layer
@@ -216,8 +201,8 @@ class CloudformationStack(object):
                 )
             elif value["Type"] == "AWS::Lambda::LayerVersion":
                 layer_name = value["Properties"]["LayerName"]
-                layer_file = "{layer_name}.zip".format(layer_name=layer_name)
-                layer_version = "{layer_name}_version".format(layer_name=layer_name)
+                layer_file = f"{layer_name}.zip"
+                layer_version = f"{layer_name}_version"
                 template["Resources"][key]["Properties"]["Content"] = {
                     "S3Bucket": os.getenv("bucket"),
                     "S3ObjectVersion": os.getenv(
