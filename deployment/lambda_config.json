@@ -55,12 +55,19 @@
                 "promise",
                 "pendulum"
             ],
-            "package_files": ["typing_extensions.py", "zipp.py"],
+            "package_files": [
+                "typing_extensions.py",
+                "zipp.py"
+            ],
             "files": {}
         },
         "silvaengine_microcore_layer": {
             "update": false,
-            "packages": ["sample_module", "datawald_interface", "datawald_model"],
+            "packages": [
+                "sample_module",
+                "datawald_interface",
+                "datawald_model"
+            ],
             "package_files": [],
             "files": {}
         }
