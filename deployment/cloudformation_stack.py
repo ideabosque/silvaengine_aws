@@ -10,11 +10,7 @@ if len(sys.argv) == 3:
 else:
     dotenv.load_dotenv(".env")
 
-if os.getenv("lambda_config") is not None:
-    lambda_config = __import__(os.getenv("lambda_config"))
-    lambdaConfig = getattr(lambda_config, "lambdaConfig")
-else:
-    from lambda_config import lambdaConfig
+lambda_config = json.load(open("lambda_config.json"))
 
 import logging
 
@@ -30,7 +26,7 @@ logger = logging.getLogger()
 
 # Helper class to convert a DynamoDB item to JSON.
 class JSONEncoder(json.JSONEncoder):
-    def default(self, o):   # pylint: disable=method-hidden
+    def default(self, o):  # pylint: disable=method-hidden
         if isinstance(o, Decimal):
             if o % 1 > 0:
                 return float(o)
@@ -156,7 +152,7 @@ class CloudformationStack(object):
     def deploy(cls):
         cf = cls()
         # Package and upload the code.
-        for name, funct in lambdaConfig["functions"].items():
+        for name, funct in lambda_config["functions"].items():
             if funct["update"]:
                 lambda_file = "{function_name}.zip".format(function_name=name)
                 cf.pack_aws_lambda(
@@ -169,7 +165,7 @@ class CloudformationStack(object):
                 cf.upload_aws_s3_bucket(lambda_file, os.getenv("bucket"))
                 logger.info("Upload the lambda package.")
 
-        for name, layer in lambdaConfig["layers"].items():
+        for name, layer in lambda_config["layers"].items():
             if layer["update"]:
                 layer_file = "{layer_name}.zip".format(layer_name=name)
                 cf.pack_aws_lambda_layer(
@@ -230,7 +226,9 @@ class CloudformationStack(object):
                     "S3Key": layer_file,
                 }
             elif value["Type"] == "AWS::IAM::Role" and os.getenv("iam_role_name"):
-                template["Resources"][key]["Properties"]["RoleName"] = os.getenv("iam_role_name")
+                template["Resources"][key]["Properties"]["RoleName"] = os.getenv(
+                    "iam_role_name"
+                )
 
         params = {
             "StackName": stack_name,
