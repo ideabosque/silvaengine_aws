@@ -1,0 +1,68 @@
+{
+    "functions": {
+        "silvaengine_area_resource": {
+            "update": false,
+            "base": "/api",
+            "packages": [],
+            "package_files": [],
+            "files": {}
+        },
+        "silvaengine_agenttask": {
+            "update": false,
+            "base": "/taskqueue/agenttask",
+            "packages": [],
+            "package_files": [],
+            "files": {}
+        },
+        "silvaengine_microcore": {
+            "update": false,
+            "base": "/beehive/microcore",
+            "packages": [],
+            "package_files": [],
+            "files": {}
+        }
+    },
+    "layers": {
+        "silvaengine_layer": {
+            "update": true,
+            "packages": [
+                "silvaengine_base",
+                "silvaengine_utility",
+                "pynamodb",
+                "dateutil",
+                "graphene",
+                "aniso8601",
+                "graphql",
+                "graphql_relay",
+                "rx",
+                "promise",
+                "requests",
+                "urllib3",
+                "chardet",
+                "certifi",
+                "idna",
+                "tenacity",
+                "dotenv",
+                "pymysql",
+                "pyathena",
+                "singledispatch",
+                "greenlet",
+                "importlib-metadata",
+                "sqlalchemy",
+                "graphene_sqlalchemy",
+                "graphene_sqlalchemy_filter",
+                "pytzdata",
+                "promise",
+                "pendulum"
+            ],
+            "package_files": ["typing_extensions.py", "zipp.py"],
+            "files": {}
+        },
+        "silvaengine_microcore_layer": {
+            "update": false,
+            "packages": ["sample_module", "datawald_interface", "datawald_model"],
+            "package_files": [],
+            "files": {}
+        }
+    }
+}
