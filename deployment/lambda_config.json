@@ -1,21 +1,18 @@
 {
     "functions": {
         "silvaengine_area_resource": {
-            "update": false,
             "base": "/api",
             "packages": [],
             "package_files": [],
             "files": {}
         },
         "silvaengine_agenttask": {
-            "update": false,
             "base": "/taskqueue/agenttask",
             "packages": [],
             "package_files": [],
             "files": {}
         },
         "silvaengine_microcore": {
-            "update": false,
             "base": "/beehive/microcore",
             "packages": [],
             "package_files": [],
@@ -24,7 +21,6 @@
     },
     "layers": {
         "silvaengine_layer": {
-            "update": true,
             "packages": [
                 "silvaengine_base",
                 "silvaengine_utility",
@@ -62,7 +58,6 @@
             "files": {}
         },
         "silvaengine_microcore_layer": {
-            "update": false,
             "packages": [
                 "sample_module",
                 "datawald_interface",

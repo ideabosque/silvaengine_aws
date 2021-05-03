@@ -95,7 +95,7 @@
                "S3Key":"silvaengine_area_resource.zip"
             },
             "Runtime":"python3.8",
-            "Timeout":"25",
+            "Timeout":"900",
             "Environment":{
                "Variables":{
                   "LOGGINGLEVEL":"logging.INFO",
@@ -129,7 +129,7 @@
                "S3Key":"silvaengine_agenttask.zip"
             },
             "Runtime":"python3.8",
-            "Timeout":"25",
+            "Timeout":"900",
             "Environment":{
                "Variables":{
                   "LOGGINGLEVEL":"logging.INFO",

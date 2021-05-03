@@ -13,6 +13,8 @@ else:
 lambda_config = json.load(open("lambda_config.json", "r"))
 root_path = os.getenv("root_path")
 site_packages = os.getenv("site_packages")
+functions = os.getenv("functions").split(",")
+layers = os.getenv("layers").split(",")
 
 import logging
 
@@ -143,29 +145,33 @@ class CloudformationStack(object):
         cf = cls()
         # Package and upload the code.
         for name, funct in lambda_config["functions"].items():
-            if funct["update"]:
-                lambda_file = f"{name}.zip"
-                cf.pack_aws_lambda(
-                    lambda_file,
-                    funct["base"],
-                    funct["packages"],
-                    package_files=funct["package_files"],
-                    files=funct["files"],
-                )
-                cf.upload_aws_s3_bucket(lambda_file, os.getenv("bucket"))
-                logger.info("Upload the lambda package.")
+            if name not in functions:
+                continue
+
+            lambda_file = f"{name}.zip"
+            cf.pack_aws_lambda(
+                lambda_file,
+                funct["base"],
+                funct["packages"],
+                package_files=funct["package_files"],
+                files=funct["files"],
+            )
+            cf.upload_aws_s3_bucket(lambda_file, os.getenv("bucket"))
+            logger.info(f"Upload the lambda package ({name}).")
 
         for name, layer in lambda_config["layers"].items():
-            if layer["update"]:
-                layer_file = f"{name}.zip"
-                cf.pack_aws_lambda_layer(
-                    layer_file,
-                    layer["packages"],
-                    package_files=layer["package_files"],
-                    files=layer["files"],
-                )
-                cf.upload_aws_s3_bucket(layer_file, os.getenv("bucket"))
-                logger.info("Upload the lambda layer package.")
+            if name not in layers:
+                continue
+
+            layer_file = f"{name}.zip"
+            cf.pack_aws_lambda_layer(
+                layer_file,
+                layer["packages"],
+                package_files=layer["package_files"],
+                files=layer["files"],
+            )
+            cf.upload_aws_s3_bucket(layer_file, os.getenv("bucket"))
+            logger.info(f"Upload the lambda layer package ({name}).")
 
         # Update the cloudformation stack.
         stack_name = sys.argv[-1]

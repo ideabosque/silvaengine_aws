@@ -115,11 +115,12 @@
                "S3Bucket":"silvaengine-aws",
                "S3Key":"silvaengine_microcore.zip"
             },
-            "Runtime":"python3.7",
-            "Timeout":"300",
+            "Runtime":"python3.8",
+            "Timeout":"900",
             "Environment":{
                "Variables":{
-                  "LOGGINGLEVEL":"logging.INFO"
+                  "LOGGINGLEVEL":"logging.INFO",
+                  "REGIONNAME":"us-west-2"
                }
             }
          },
