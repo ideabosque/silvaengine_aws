@@ -13,8 +13,8 @@ else:
 lambda_config = json.load(open("lambda_config.json", "r"))
 root_path = os.getenv("root_path")
 site_packages = os.getenv("site_packages")
-functions = os.getenv("functions").split(",")
-layers = os.getenv("layers").split(",")
+functions = os.getenv("functions", "").split(",")
+layers = os.getenv("layers", "").split(",")
 
 import logging
 
