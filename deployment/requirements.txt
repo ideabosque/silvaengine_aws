@@ -15,5 +15,6 @@ graphene_sqlalchemy_filter
 zipp
 promise
 pendulum
+cerberus
 git+git://github.com/ideabosque/silvaengine_utility.git@main#egg=silvaengine_utility
 git+git://github.com/ideabosque/silvaengine_base.git@main#egg=silvaengine_base
