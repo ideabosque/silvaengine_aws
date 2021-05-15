@@ -23,6 +23,7 @@
         "silvaengine_layer": {
             "packages": [
                 "silvaengine_base",
+                "silvaengine_auth",
                 "silvaengine_utility",
                 "pynamodb",
                 "dateutil",
