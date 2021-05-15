@@ -1,7 +1,7 @@
 boto3
 requests
 graphene
-pynamodb
+pynamodb==4.3.3
 python-dotenv
 docutils
 wheel
@@ -18,3 +18,4 @@ pendulum
 cerberus
 git+git://github.com/ideabosque/silvaengine_utility.git@main#egg=silvaengine_utility
 git+git://github.com/ideabosque/silvaengine_base.git@main#egg=silvaengine_base
+git+git://github.com/ideabosque/silvaengine_auth.git@main#egg=silvaengine_auth
