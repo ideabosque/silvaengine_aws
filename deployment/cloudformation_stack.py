@@ -1,7 +1,9 @@
 import boto3, json, sys, os, dotenv, zipfile
+from botocore.configloader import load_config
 from datetime import datetime, date
 from decimal import Decimal
 from time import sleep
+from botocore.exceptions import ClientError
 
 
 # Look for a .env file
@@ -119,13 +121,21 @@ class CloudformationStack(object):
 
     # Check if the stack exists.
     def _stack_exists(self, stack_name):
-        stacks = self.aws_cloudformation.list_stacks()["StackSummaries"]
-        for stack in stacks:
-            if stack["StackStatus"] == "DELETE_COMPLETE":
-                continue
-            if stack_name == stack["StackName"]:
-                return True
-        return False
+        try:
+            response = self.aws_cloudformation.describe_stacks(StackName=stack_name)
+            for stack in response["Stacks"]:
+                if stack["StackStatus"] == "DELETE_COMPLETE":
+                    continue
+                if stack_name == stack["StackName"]:
+                    return True
+            return False
+        except ClientError as e:
+            if (
+                e.response["Error"]["Message"]
+                == f"Stack with id {stack_name} does not exist"
+            ):
+                return False
+            raise
 
     # Retrieve the last version of the object in a S3 bucket.
     def _get_object_last_version(self, s3_key):
