@@ -51,11 +51,13 @@
                 "pytzdata",
                 "promise",
                 "pendulum",
-                "cerberus"
+                "cerberus",
+		"deepdiff"
             ],
             "package_files": [
                 "typing_extensions.py",
-                "zipp.py"
+                "zipp.py",
+		"ordered_set.py"
             ],
             "files": {}
         },
