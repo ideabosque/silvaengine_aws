@@ -22,6 +22,7 @@
     "layers": {
         "silvaengine_layer": {
             "packages": [
+                "silvaengine_resource",
                 "silvaengine_base",
                 "silvaengine_auth",
                 "silvaengine_utility",
@@ -52,12 +53,12 @@
                 "promise",
                 "pendulum",
                 "cerberus",
-		"deepdiff"
+                "deepdiff"
             ],
             "package_files": [
                 "typing_extensions.py",
                 "zipp.py",
-		"ordered_set.py"
+                "ordered_set.py"
             ],
             "files": {}
         },
