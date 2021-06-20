@@ -17,7 +17,6 @@ promise
 pendulum
 cerberus
 deepdiff
-click
 git+git://github.com/ideabosque/silvaengine_utility.git@main#egg=silvaengine_utility
 git+git://github.com/ideabosque/silvaengine_base.git@main#egg=silvaengine_base
 git+git://github.com/ideabosque/silvaengine_auth.git@main#egg=silvaengine_auth

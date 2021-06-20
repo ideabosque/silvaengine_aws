@@ -53,8 +53,7 @@
                 "promise",
                 "pendulum",
                 "cerberus",
-                "deepdiff",
-                "click"
+                "deepdiff"
             ],
             "package_files": [
                 "typing_extensions.py",
