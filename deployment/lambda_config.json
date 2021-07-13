@@ -56,7 +56,7 @@
                 "deepdiff",
                 "pytz",
                 "openpyxl",
-                "et-xmlfile"
+                "et_xmlfile"
             ],
             "package_files": [
                 "typing_extensions.py",
