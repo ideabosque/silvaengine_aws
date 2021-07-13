@@ -54,7 +54,9 @@
                 "pendulum",
                 "cerberus",
                 "deepdiff",
-                "pytz"
+                "pytz",
+                "openpyxl",
+                "et-xmlfile"
             ],
             "package_files": [
                 "typing_extensions.py",
