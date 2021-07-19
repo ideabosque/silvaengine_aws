@@ -45,7 +45,8 @@
                               "iam:ListRoles",
                               "sns:*",
                               "lambda:*",
-                              "ec2:*"
+                              "ec2:*",
+                              "cognito-idp:*"
                            ],
                            "Resource": "*",
                            "Effect": "Allow"
