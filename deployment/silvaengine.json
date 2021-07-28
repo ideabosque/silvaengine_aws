@@ -316,14 +316,22 @@
             "BillingMode": "PAY_PER_REQUEST",
             "AttributeDefinitions": [
                {
+                  "AttributeName": "owner_id",
+                  "AttributeType": "S"
+               },
+               {
                   "AttributeName": "role_id",
                   "AttributeType": "S"
                }
             ],
             "KeySchema": [
                {
-                  "AttributeName": "role_id",
+                  "AttributeName": "owner_id",
                   "KeyType": "HASH"
+               },
+               {
+                  "AttributeName": "role_id",
+                  "KeyType": "RANGE"
                }
             ]
          }

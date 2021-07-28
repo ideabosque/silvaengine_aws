@@ -57,7 +57,9 @@
                 "pytz",
                 "openpyxl",
                 "et_xmlfile",
-                "event_triggers"
+                "event_triggers",
+                "jose",
+                "ecdsa"
             ],
             "package_files": [
                 "typing_extensions.py",
