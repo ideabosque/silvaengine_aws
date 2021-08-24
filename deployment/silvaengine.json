@@ -381,21 +381,21 @@
             "BillingMode": "PAY_PER_REQUEST",
             "AttributeDefinitions": [
                {
-                  "AttributeName": "subject_id",
+                  "AttributeName": "subject_type",
                   "AttributeType": "S"
                },
                {
-                  "AttributeName": "subject_type",
+                  "AttributeName": "log_id",
                   "AttributeType": "S"
                }
             ],
             "KeySchema": [
                {
-                  "AttributeName": "subject_id",
+                  "AttributeName": "subject_type",
                   "KeyType": "HASH"
                },
                {
-                  "AttributeName": "subject_type",
+                  "AttributeName": "log_id",
                   "KeyType": "RANGE"
                }
             ]

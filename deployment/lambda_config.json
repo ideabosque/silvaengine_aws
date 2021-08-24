@@ -59,7 +59,8 @@
                 "et_xmlfile",
                 "event_triggers",
                 "jose",
-                "ecdsa"
+                "ecdsa",
+                "logzero"
             ],
             "package_files": [
                 "typing_extensions.py",
