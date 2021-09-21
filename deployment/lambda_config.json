@@ -60,7 +60,8 @@
                 "event_triggers",
                 "jose",
                 "ecdsa",
-                "logzero"
+                "logzero",
+                "phpserialize"
             ],
             "package_files": [
                 "typing_extensions.py",
