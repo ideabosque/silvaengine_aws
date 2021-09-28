@@ -61,12 +61,13 @@
                 "jose",
                 "ecdsa",
                 "logzero",
-                "phpserialize"
+                "requests_oauthlib"
             ],
             "package_files": [
                 "typing_extensions.py",
                 "zipp.py",
-                "ordered_set.py"
+                "ordered_set.py",
+                "phpserialize.py"
             ],
             "files": {}
         },
