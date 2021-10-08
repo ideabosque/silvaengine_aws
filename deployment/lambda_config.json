@@ -33,6 +33,7 @@
                 "graphql",
                 "graphql_relay",
                 "rx",
+                "libxslt",
                 "promise",
                 "requests",
                 "urllib3",

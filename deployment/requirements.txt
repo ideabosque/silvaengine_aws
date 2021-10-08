@@ -1,4 +1,5 @@
 boto3
+lxml
 requests
 graphene
 pynamodb==4.3.3
