@@ -67,7 +67,8 @@
                 "lxml",
                 "requests_toolbelt",
                 "attr",
-                "zeep"
+                "zeep",
+                "oauthlib"
             ],
             "package_files": [
                 "typing_extensions.py",
