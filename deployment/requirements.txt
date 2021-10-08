@@ -1,5 +1,5 @@
 boto3
-lxml==4.6.2
+lxml==4.6.3
 requests
 graphene
 pynamodb==4.3.3
