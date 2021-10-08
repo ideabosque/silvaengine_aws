@@ -79,7 +79,9 @@
                 "requests_file.py",
                 "six.py"
             ],
-            "files": {}
+            "files": {
+                "libxslt.so.1": "/usr/lib"
+            }
         },
         "silvaengine_microcore_layer": {
             "packages": [
