@@ -1,4 +1,5 @@
 boto3
+lxml
 requests
 graphene
 pynamodb==4.3.3
@@ -25,6 +26,7 @@ logzero
 phpserialize
 requests_oauthlib
 zeep
+oauthlib
 git+git://github.com/ideabosque/silvaengine_utility.git@main#egg=silvaengine_utility
 git+git://github.com/ideabosque/event_triggers.git@main#egg=event_triggers
 git+git://github.com/ideabosque/silvaengine_base.git@main#egg=silvaengine_base
