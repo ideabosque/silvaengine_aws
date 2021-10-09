@@ -25,6 +25,7 @@ chardet
 logzero
 phpserialize
 requests_oauthlib
+appdirs
 zeep
 oauthlib
 git+git://github.com/ideabosque/silvaengine_utility.git@main#egg=silvaengine_utility
