@@ -69,9 +69,7 @@
                 "requests_toolbelt",
                 "attr",
                 "zeep",
-                "oauthlib",
-                "pystan",
-                "fbprophet"
+                "oauthlib"
             ],
             "package_files": [
                 "typing_extensions.py",
