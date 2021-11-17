@@ -1,7 +1,7 @@
 boto3
 lxml
 requests
-graphene
+graphene==2.1.9
 pynamodb==4.3.3
 python-dotenv
 docutils
