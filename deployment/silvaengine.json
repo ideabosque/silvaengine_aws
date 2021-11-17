@@ -100,7 +100,8 @@
                   "LOGGINGLEVEL": "logging.INFO",
                   "REGIONNAME": "us-west-2"
                }
-            }
+            },
+            "MemorySize": 256
          },
          "DependsOn": [
             "SilvaEngineExecRole",
@@ -134,7 +135,8 @@
                   "LOGGINGLEVEL": "logging.INFO",
                   "REGIONNAME": "us-west-2"
                }
-            }
+            },
+            "MemorySize": 256
          },
          "DependsOn": [
             "SilvaEngineExecRole",
