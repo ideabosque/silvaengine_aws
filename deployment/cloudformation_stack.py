@@ -56,6 +56,7 @@ class CloudformationStack(object):
         )
         self.aws_s3 = boto3.resource(
             "s3",
+            region_name=os.getenv("region_name"),
             aws_access_key_id=os.getenv("aws_access_key_id"),
             aws_secret_access_key=os.getenv("aws_secret_access_key"),
         )
