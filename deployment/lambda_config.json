@@ -24,7 +24,7 @@
             "packages": [
                 "silvaengine_resource",
                 "silvaengine_base",
-                "silvaengine_auth",
+                "silvaengine_authorizer",
                 "silvaengine_utility",
                 "pynamodb",
                 "dateutil",
@@ -70,7 +70,9 @@
                 "attr",
                 "zeep",
                 "oauthlib",
-                "reportlab"
+                "reportlab",
+                "jinja2",
+                "markupsafe"
             ],
             "package_files": [
                 "typing_extensions.py",
