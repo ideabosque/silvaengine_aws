@@ -6,4 +6,4 @@ echo "y" | pip uninstall silvaengine_auth && pip install git+git://github.com/id
 echo "y" | pip uninstall silvaengine_base && pip install git+git://github.com/ideabosque/silvaengine_base.git@main#egg=silvaengine_base
 echo "y" | pip uninstall silvaengine_resource && pip install git+git://github.com/ideabosque/silvaengine_resouces.git@main#egg=silvaengine_resource
 
-python3.8 cloudformation_stack.py silvaengine
+# python3.8 cloudformation_stack.py silvaengine
