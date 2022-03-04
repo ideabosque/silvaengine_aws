@@ -22,8 +22,6 @@
     "layers": {
         "silvaengine_layer": {
             "packages": [
-                "silvaengine_resource",
-                "silvaengine_permission",
                 "silvaengine_base",
                 "silvaengine_authorizer",
                 "silvaengine_utility",
