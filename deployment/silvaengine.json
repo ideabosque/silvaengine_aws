@@ -172,6 +172,39 @@
             }
          }
       },
+      "SilvaEngineTaskQueue": {
+         "Type": "AWS::SQS::Queue",
+         "Properties": {
+            "ContentBasedDeduplication": true,
+            "FifoQueue": true,
+            "QueueName": "silvaengine_task_queue.fifo",
+            "VisibilityTimeout": 900
+         }
+      },
+      "SilvaEngineTaskEventSourceMapping": {
+         "Type": "AWS::Lambda::EventSourceMapping",
+         "Properties": {
+            "BatchSize": 10,
+            "Enabled": true,
+            "EventSourceArn": {
+               "Fn::GetAtt": [
+                  "SilvaEngineTaskQueue",
+                  "Arn"
+               ]
+            },
+            "FunctionName": {
+               "Fn::GetAtt": [
+                  "SilvaEngineAgentTask",
+                  "Arn"
+               ]
+            },
+            "MaximumBatchingWindowInSeconds": 0
+         },
+         "DependsOn": [
+            "SilvaEngineTaskQueue",
+            "SilvaEngineAgentTask"
+         ]
+      },
       "SilvaEngineConfigdata": {
          "Type": "AWS::DynamoDB::Table",
          "Properties": {

@@ -71,7 +71,8 @@
                 "oauthlib",
                 "reportlab",
                 "jinja2",
-                "markupsafe"
+                "markupsafe",
+                "humps"
             ],
             "package_files": [
                 "typing_extensions.py",
@@ -87,9 +88,7 @@
         },
         "silvaengine_microcore_layer": {
             "packages": [
-                "sample_module",
-                "datawald_interface",
-                "datawald_model"
+                "sample_module"
             ],
             "package_files": [],
             "files": {}
