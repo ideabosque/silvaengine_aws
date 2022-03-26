@@ -216,6 +216,11 @@ class CloudformationStack(object):
                         "Variables"
                     ].items()
                 )
+                if os.getenv("security_group_ids") and os.getenv("subnet_ids"):
+                    template["Resources"][key]["Properties"]["VpcConfig"] = {
+                        "SecurityGroupIds": os.getenv("security_group_ids").split(","),
+                        "SubnetIds": os.getenv("subnet_ids").split(","),
+                    }
             elif value["Type"] == "AWS::Lambda::LayerVersion":
                 layer_name = value["Properties"]["LayerName"]
                 layer_file = f"{layer_name}.zip"
