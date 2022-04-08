@@ -72,7 +72,8 @@
                 "reportlab",
                 "jinja2",
                 "markupsafe",
-                "humps"
+                "humps",
+                "warlock"
             ],
             "package_files": [
                 "typing_extensions.py",
