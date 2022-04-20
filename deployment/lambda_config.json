@@ -73,17 +73,26 @@
                 "jinja2",
                 "markupsafe",
                 "humps",
-                "warlock"
+                "ordered_set",
+                "warlock",
+                "pandas",
+                "numpy",
+                "jsonschema",
+                "jsonschema-3.2.0.dist-info",
+                "pyrsistent"
             ],
             "package_files": [
                 "typing_extensions.py",
                 "zipp.py",
-                "ordered_set.py",
                 "phpserialize.py",
                 "appdirs.py",
                 "cached_property.py",
                 "requests_file.py",
-                "six.py"
+                "six.py",
+                "dicttoxml.py",
+                "xmltodict.py",
+                "jsonpatch.py",
+                "jsonpointer.py"
             ],
             "files": {}
         },
