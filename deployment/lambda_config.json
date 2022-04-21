@@ -77,6 +77,7 @@
                 "warlock",
                 "pandas",
                 "numpy",
+                "numpy.libs",
                 "jsonschema",
                 "jsonschema-3.2.0.dist-info",
                 "pyrsistent"
