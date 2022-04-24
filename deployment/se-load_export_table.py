@@ -11,7 +11,13 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger()
 
 actions = ["load", "export"]
-tables = ["se-configdata", "se-endpoints", "se-connections", "se-functions"]
+tables = [
+    "se-configdata",
+    "se-endpoints",
+    "se-connections",
+    "se-functions",
+    "dw-product_metadata",
+]
 
 dynamodb = boto3.resource(
     "dynamodb",

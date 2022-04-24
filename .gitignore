@@ -11,4 +11,5 @@ qa/*
 .vscode
 */.env
 */se-*.json
+*/dw-*.json
 */*.html
