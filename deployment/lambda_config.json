@@ -70,6 +70,7 @@
                 "zeep",
                 "oauthlib",
                 "reportlab",
+                "PIL",
                 "jinja2",
                 "markupsafe",
                 "humps",
