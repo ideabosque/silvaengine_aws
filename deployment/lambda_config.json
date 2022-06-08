@@ -82,7 +82,7 @@
                 "jsonschema",
                 "jsonschema-3.2.0.dist-info",
                 "pyrsistent",
-                "orjson"
+                "jsonpickle"
             ],
             "package_files": [
                 "typing_extensions.py",
