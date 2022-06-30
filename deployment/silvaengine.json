@@ -133,7 +133,8 @@
             "Environment": {
                "Variables": {
                   "LOGGINGLEVEL": "logging.INFO",
-                  "REGIONNAME": "us-west-2"
+                  "REGIONNAME": "us-west-2",
+                  "DYNAMODBSTREAMENDPOINTID": "datamart"
                }
             },
             "MemorySize": 256
