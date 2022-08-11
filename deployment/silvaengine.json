@@ -326,24 +326,21 @@
                   "AttributeType": "S"
                },
                {
-                  "AttributeName": "service",
+                  "AttributeName": "type",
                   "AttributeType": "S"
                }
             ],
             "KeySchema": [
                {
-                  "AttributeName": "type",
+                  "AttributeName": "apply_to",
                   "KeyType": "HASH"
                },
                {
-                  "AttributeName": "service",
+                  "AttributeName": "type",
                   "KeyType": "RANGE"
                }
             ]
-         },
-         "DependsOn": [
-            "SilvaEngineConnections"
-         ]
+         }
       },
       "SilvaEngineRoles": {
          "Type": "AWS::DynamoDB::Table",
