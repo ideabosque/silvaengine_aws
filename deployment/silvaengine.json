@@ -315,14 +315,14 @@
             "SilvaEngineConnections"
          ]
       },
-      "SilvaEnginePermissions": {
+      "SilvaEngineNotifications": {
          "Type": "AWS::DynamoDB::Table",
          "Properties": {
-            "TableName": "se-permissions",
+            "TableName": "se-notifications",
             "BillingMode": "PAY_PER_REQUEST",
             "AttributeDefinitions": [
                {
-                  "AttributeName": "permission_id",
+                  "AttributeName": "apply_to",
                   "AttributeType": "S"
                },
                {
@@ -332,7 +332,7 @@
             ],
             "KeySchema": [
                {
-                  "AttributeName": "permission_id",
+                  "AttributeName": "type",
                   "KeyType": "HASH"
                },
                {
