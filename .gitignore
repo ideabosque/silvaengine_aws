@@ -10,6 +10,7 @@ qa/*
 */dist
 .vscode
 */.env
+*/*.env
 */se-*.json
 */dw-*.json
 */*.html
