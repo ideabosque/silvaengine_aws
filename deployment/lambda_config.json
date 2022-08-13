@@ -38,6 +38,7 @@
                 "urllib3",
                 "chardet",
                 "certifi",
+                "certifi-2022.6.15.dist-info",
                 "idna",
                 "tenacity",
                 "dotenv",
@@ -84,7 +85,8 @@
                 "pyrsistent",
                 "jsonpickle",
                 "elasticsearch",
-                "hubspot"
+                "hubspot",
+                "hubspot_api_client-5.1.1.dist-info"
             ],
             "package_files": [
                 "typing_extensions.py",
