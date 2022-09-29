@@ -12,7 +12,6 @@ logger = logging.getLogger()
 
 actions = ["load", "export"]
 tables = [
-    "se-configdata",
     "se-endpoints",
     "se-connections",
     "se-functions",
