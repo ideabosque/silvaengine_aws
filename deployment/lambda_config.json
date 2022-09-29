@@ -83,7 +83,8 @@
                 "jsonschema-3.2.0.dist-info",
                 "pyrsistent",
                 "jsonpickle",
-                "elasticsearch"
+                "elasticsearch",
+                "mutex_engine"
             ],
             "package_files": [
                 "typing_extensions.py",

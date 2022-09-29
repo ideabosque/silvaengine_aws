@@ -434,6 +434,33 @@
             ]
          }
       },
+      "SilvaEngineLocks": {
+         "Type": "AWS::DynamoDB::Table",
+         "Properties": {
+            "TableName": "se-locks",
+            "BillingMode": "PAY_PER_REQUEST",
+            "AttributeDefinitions": [
+               {
+                  "AttributeName": "identifier",
+                  "AttributeType": "S"
+               },
+               {
+                  "AttributeName": "locked_at",
+                  "AttributeType": "S"
+               }
+            ],
+            "KeySchema": [
+               {
+                  "AttributeName": "identifier",
+                  "KeyType": "HASH"
+               },
+               {
+                  "AttributeName": "locked_at",
+                  "KeyType": "RANGE"
+               }
+            ]
+         }
+      },
       "SilvaEngineApi": {
          "Type": "AWS::ApiGateway::RestApi",
          "Properties": {
