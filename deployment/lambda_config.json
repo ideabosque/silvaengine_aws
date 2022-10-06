@@ -85,6 +85,8 @@
                 "numpy.libs",
                 "jsonschema",
                 "jsonschema-3.2.0.dist-info",
+                "importlib_resources",
+                "importlib_resources-5.9.0.dist-info",
                 "pyrsistent",
                 "jsonpickle",
                 "elasticsearch",
