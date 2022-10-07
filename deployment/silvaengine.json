@@ -446,7 +446,7 @@
                },
                {
                   "AttributeName": "locked_at",
-                  "AttributeType": "S"
+                  "AttributeType": "N"
                }
             ],
             "KeySchema": [
