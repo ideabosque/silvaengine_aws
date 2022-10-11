@@ -443,20 +443,12 @@
                {
                   "AttributeName": "identifier",
                   "AttributeType": "S"
-               },
-               {
-                  "AttributeName": "locked_at",
-                  "AttributeType": "N"
                }
             ],
             "KeySchema": [
                {
                   "AttributeName": "identifier",
                   "KeyType": "HASH"
-               },
-               {
-                  "AttributeName": "locked_at",
-                  "KeyType": "RANGE"
                }
             ]
          }
