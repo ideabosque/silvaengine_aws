@@ -90,11 +90,11 @@
                 "pyrsistent",
                 "jsonpickle",
                 "elasticsearch",
-                "mutex_engine"
+                "mutex_engine",
+                "zipp"
             ],
             "package_files": [
                 "typing_extensions.py",
-                "zipp.py",
                 "phpserialize.py",
                 "appdirs.py",
                 "cached_property.py",

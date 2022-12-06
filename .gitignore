@@ -15,4 +15,4 @@ qa/*
 */dw-*.json
 */*.html
 */*.csv
-*/*.sh
+**/*.sh
