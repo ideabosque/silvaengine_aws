@@ -177,6 +177,7 @@
          "Type": "AWS::SQS::Queue",
          "Properties": {
             "ContentBasedDeduplication": true,
+            "DeduplicationScope": "messageGroup",
             "FifoQueue": true,
             "QueueName": "silvaengine_task_queue.fifo",
             "VisibilityTimeout": 900
