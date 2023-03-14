@@ -41,9 +41,10 @@ elasticsearch==7.10.1
 hubspot-api-client==6.0.0
 sentry-sdk==1.11.1
 pydocparser==2.0
-git+git://github.com/ideabosque/silvaengine_utility.git@main#egg=silvaengine_utility
-git+git://github.com/ideabosque/event_triggers.git@main#egg=event_triggers
-git+git://github.com/ideabosque/silvaengine_base.git@dev#egg=silvaengine_base
-git+git://github.com/ideabosque/silvaengine_resouces.git@main#egg=silvaengine_resource
+git+ssh://git@github.com/ideabosque/silvaengine_utility.git@main#egg=silvaengine_utility
+git+ssh://git@github.com/ideabosque/event_triggers.git@main#egg=event_triggers
+git+ssh://git@github.com/ideabosque/silvaengine_base.git@dev#egg=silvaengine_base
+git+ssh://git@github.com/ideabosque/silvaengine_resouces.git@main#egg=silvaengine_resource
+git+ssh://git@github.com/ideabosque/silvaengine_authorizer.git@main#egg=silvaengine_authorizer
 git+ssh://git@github.com/abacusipllc/event_recorder.git@main#egg=event_recorder
 git+ssh://git@github.com/abacusipllc/mutex_engine.git@master#egg=mutex_engine
