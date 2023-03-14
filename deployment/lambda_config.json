@@ -92,7 +92,8 @@
                 "elasticsearch",
                 "mutex_engine",
                 "zipp",
-                "sentry_sdk"
+                "sentry_sdk",
+                "pydocparser"
             ],
             "package_files": [
                 "typing_extensions.py",
