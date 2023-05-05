@@ -93,7 +93,8 @@
                 "mutex_engine",
                 "zipp",
                 "sentry_sdk",
-                "pydocparser"
+                "pydocparser",
+                "json2html"
             ],
             "package_files": [
                 "typing_extensions.py",
