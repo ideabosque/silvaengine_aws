@@ -144,6 +144,42 @@
             "SilvaEngineLayer"
          ]
       },
+      "SilvaEngineAgentTaskEWP": {
+         "Type": "AWS::Lambda::Function",
+         "Properties": {
+            "FunctionName": "silvaengine_agenttask_ewp",
+            "Handler": "tasks.handler",
+            "Layers": [
+               {
+                  "Ref": "SilvaEngineLayer"
+               }
+            ],
+            "Role": {
+               "Fn::GetAtt": [
+                  "SilvaEngineExecRole",
+                  "Arn"
+               ]
+            },
+            "Code": {
+               "S3Bucket": "silvaengine-aws",
+               "S3Key": "silvaengine_agenttask.zip"
+            },
+            "Runtime": "python3.8",
+            "Timeout": "900",
+            "Environment": {
+               "Variables": {
+                  "LOGGINGLEVEL": "logging.INFO",
+                  "REGIONNAME": "us-west-2",
+                  "DYNAMODBSTREAMENDPOINTID": "datamart"
+               }
+            },
+            "MemorySize": 256
+         },
+         "DependsOn": [
+            "SilvaEngineExecRole",
+            "SilvaEngineLayer"
+         ]
+      },
       "SilvaEngineLayer": {
          "Type": "AWS::Lambda::LayerVersion",
          "Properties": {
