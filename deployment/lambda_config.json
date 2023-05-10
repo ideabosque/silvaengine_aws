@@ -12,12 +12,6 @@
             "package_files": [],
             "files": {}
         },
-        "silvaengine_agenttask_ewp": {
-            "base": "/taskqueue/agenttask",
-            "packages": [],
-            "package_files": [],
-            "files": {}
-        },
         "silvaengine_microcore": {
             "base": "/beehive/microcore",
             "packages": [],
