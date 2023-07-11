@@ -94,7 +94,9 @@
                 "zipp",
                 "sentry_sdk",
                 "pydocparser",
-                "json2html"
+                "json2html",
+                "Levenshtein",
+                "rapidfuzz"
             ],
             "package_files": [
                 "typing_extensions.py",
