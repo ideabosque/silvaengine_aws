@@ -1,7 +1,13 @@
 # Dynamic GraphQL Engine (SilvaEngine) with Routing Dispatch Layer 
 
 ## Synopsis
-The GraphQL engine (SilvaEngine) provides the capability to delivery multiple versions of functions by the routing dispatch layer with the GraphQL as the API.
+The SilvaEngine, our advanced GraphQL engine, boasts a remarkable capability to deliver multiple versions of functions through the routing dispatch layer, making GraphQL the primary API in our system. This cutting-edge feature allows us to efficiently manage various versions of functions, ensuring seamless compatibility and flexibility for our users and developers.
+
+By leveraging the power of the SilvaEngine, we can effortlessly roll out new updates and enhancements to functions while ensuring backward compatibility with existing versions. This enables us to cater to a wide range of clients, each with their specific requirements, without sacrificing performance or data integrity.
+
+Moreover, the routing dispatch layer acts as a robust mediator, intelligently directing incoming requests to the appropriate function versions, optimizing response times, and ensuring optimal resource utilization. This architectural elegance translates to a superior user experience and faster time-to-market for new features.
+
+In summary, the SilvaEngine's ability to manage multiple function versions through GraphQL has revolutionized the way we deliver and maintain our APIs. It epitomizes our commitment to technological excellence, user-centricity, and adaptability in an ever-evolving digital landscape.
 
 ## Architecture
 ![Architecture](/images/2020-04-22_12-26-42.png)
