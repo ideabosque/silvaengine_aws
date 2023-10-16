@@ -216,6 +216,10 @@ class CloudformationStack(object):
                         "Variables"
                     ].items()
                 )
+                if os.getenv("runtime"):
+                    template["Resources"][key]["Properties"]["Runtime"] = os.getenv(
+                        "runtime"
+                    )
                 if os.getenv("security_group_ids") and os.getenv("subnet_ids"):
                     template["Resources"][key]["Properties"]["VpcConfig"] = {
                         "SecurityGroupIds": os.getenv("security_group_ids").split(","),
