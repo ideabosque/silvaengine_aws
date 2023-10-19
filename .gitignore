@@ -8,7 +8,7 @@
 qa/*
 *.egg-info
 */dist
-.vscode
+.vscode/
 */.env
 */*.env
 */se-*.json
