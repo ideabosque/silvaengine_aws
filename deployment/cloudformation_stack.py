@@ -1,4 +1,4 @@
-import boto3, json, sys, os, dotenv, zipfile
+import boto3, json, sys, os, dotenv, zipfile, importlib
 from botocore.configloader import load_config
 from datetime import datetime, date
 from decimal import Decimal
@@ -12,7 +12,12 @@ if len(sys.argv) == 3:
 else:
     dotenv.load_dotenv(".env")
 
-lambda_config = json.load(open("lambda_config.json", "r"))
+lambda_config = json.load(
+    open(
+        f"{os.path.abspath(os.path.dirname(__file__))}/lambda_config.json",
+        "r",
+    )
+)
 root_path = os.getenv("root_path")
 site_packages = os.getenv("site_packages")
 functions = os.getenv("functions", "").split(",")
@@ -28,6 +33,47 @@ logging.basicConfig(
     ],
 )
 logger = logging.getLogger()
+
+
+def execute_hook(lambda_function_name, function_config, hook_function_name):
+    if not function_config.get("hooks") or not function_config.get("endpoint_id"):
+        return
+
+    packages = function_config.get("hooks", {}).get("packages")
+    if type(packages) is not list or len(packages) < 1:
+        return
+
+    events = function_config.get("hooks", {}).get("events")
+    if type(events) is not dict or len(events) < 1:
+        return
+
+    hooks = events.get(hook_function_name)
+    if type(hooks) is not list or len(hooks) < 1:
+        return
+
+    requires = ["package_name", "function_name"]
+    for hook in hooks:
+        if requires != [v for v in requires if v in hook.keys()]:
+            continue
+
+        spec = importlib.util.find_spec(hook.get("package_name"))
+
+        if spec is None:
+            continue
+
+        agent = importlib.import_module(hook.get("package_name"))
+        if hook.get("class_name"):
+            agent = getattr(agent, hook.get("class_name"))
+
+        agent = getattr(agent, hook.get("function_name"))
+        if callable(agent):
+            agent(
+                str(lambda_function_name).strip(),
+                str(function_config.get("endpoint_id")).strip(),
+                packages,
+            )
+
+    logger.info(f"Execute {hook_function_name} hooks.")
 
 
 # Helper class to convert a DynamoDB item to JSON.
@@ -56,7 +102,6 @@ class CloudformationStack(object):
         )
         self.aws_s3 = boto3.resource(
             "s3",
-            region_name=os.getenv("region_name"),
             aws_access_key_id=os.getenv("aws_access_key_id"),
             aws_secret_access_key=os.getenv("aws_secret_access_key"),
         )
@@ -154,7 +199,8 @@ class CloudformationStack(object):
     @classmethod
     def deploy(cls):
         cf = cls()
-        # Package and upload the code.
+
+        # 1. Package and upload the code.
         for name, funct in lambda_config["functions"].items():
             if name not in functions:
                 continue
@@ -184,7 +230,7 @@ class CloudformationStack(object):
             cf.upload_aws_s3_bucket(layer_file, os.getenv("bucket"))
             logger.info(f"Upload the lambda layer package ({name}).")
 
-        # Update the cloudformation stack.
+        # 2. Update the cloudformation stack.
         stack_name = sys.argv[-1]
         template = json.load(open(f"{stack_name}.json", "r"))
 
@@ -248,13 +294,16 @@ class CloudformationStack(object):
             "Tags": [{"Key": "autostack", "Value": "true"}],
             "Parameters": [],
         }
+
         if cf._stack_exists(stack_name):
             response = cf.aws_cloudformation.update_stack(**params)
         else:
             response = cf.aws_cloudformation.create_stack(**params)
+
         logger.info(json.dumps(response, indent=4, cls=JSONEncoder, ensure_ascii=False))
 
         stack = cf.aws_cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]
+
         while stack["StackStatus"].find("IN_PROGRESS") != -1:
             logger.info(
                 json.dumps(
@@ -262,6 +311,7 @@ class CloudformationStack(object):
                 )
             )
             sleep(5)
+
             stack = cf.aws_cloudformation.describe_stacks(StackName=stack_name)[
                 "Stacks"
             ][0]
@@ -277,6 +327,17 @@ class CloudformationStack(object):
                 json.dumps(
                     stack["StackStatus"], indent=4, cls=JSONEncoder, ensure_ascii=False
                 )
+            )
+
+        # 3.Execute hooks on deploy.
+        for name, function_config in lambda_config["functions"].items():
+            if name not in functions:
+                continue
+
+            execute_hook(
+                lambda_function_name=name,
+                function_config=function_config,
+                hook_function_name=sys._getframe().f_code.co_name,
             )
 
 
