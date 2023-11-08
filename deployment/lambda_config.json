@@ -67,6 +67,7 @@
                 "lxml",
                 "requests_toolbelt",
                 "attr",
+                "attrs",
                 "zeep",
                 "oauthlib",
                 "reportlab",
@@ -96,7 +97,8 @@
                 "pydocparser",
                 "json2html",
                 "Levenshtein",
-                "rapidfuzz"
+                "rapidfuzz",
+                "referencing"
             ],
             "package_files": [
                 "typing_extensions.py",
