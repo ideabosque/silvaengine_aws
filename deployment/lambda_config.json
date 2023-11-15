@@ -98,7 +98,9 @@
                 "json2html",
                 "Levenshtein",
                 "rapidfuzz",
-                "referencing"
+                "referencing",
+                "rpds",
+                "jsonschema_specifications"
             ],
             "package_files": [
                 "typing_extensions.py",
