@@ -100,7 +100,8 @@
                 "rapidfuzz",
                 "referencing",
                 "rpds",
-                "jsonschema_specifications"
+                "jsonschema_specifications",
+                "qrcode"
             ],
             "package_files": [
                 "typing_extensions.py",
