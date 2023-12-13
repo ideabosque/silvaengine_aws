@@ -101,6 +101,7 @@
                 "referencing",
                 "rpds",
                 "jsonschema_specifications",
+                "pypng",
                 "qrcode"
             ],
             "package_files": [
