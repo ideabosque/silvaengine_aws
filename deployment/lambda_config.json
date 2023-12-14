@@ -115,7 +115,8 @@
                 "dicttoxml.py",
                 "xmltodict.py",
                 "jsonpatch.py",
-                "jsonpointer.py"
+                "jsonpointer.py",
+                "png.py"
             ],
             "files": {}
         },
