@@ -101,7 +101,10 @@
                 "rapidfuzz",
                 "referencing",
                 "rpds",
-                "jsonschema_specifications"
+                "jsonschema_specifications",
+                "pypng",
+                "pypng-0.20220715.0.dist-info",
+                "qrcode"
             ],
             "package_files": [
                 "typing_extensions.py",
@@ -113,7 +116,8 @@
                 "dicttoxml.py",
                 "xmltodict.py",
                 "jsonpatch.py",
-                "jsonpointer.py"
+                "jsonpointer.py",
+                "png.py"
             ],
             "files": {}
         },
