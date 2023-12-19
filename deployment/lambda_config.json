@@ -25,6 +25,7 @@
                 "silvaengine_base",
                 "silvaengine_authorizer",
                 "silvaengine_utility",
+                "silvaengine_dynamodb_base",
                 "pynamodb",
                 "dateutil",
                 "graphene",
