@@ -76,7 +76,7 @@
                 "reportlab-3.6.11.dist-info",
                 "reportlab.libs",
                 "PIL",
-                "Pillow-9.2.0.dist-info",
+                "pillow-10.2.0.dist-info",
                 "Pillow.libs",
                 "jinja2",
                 "markupsafe",
