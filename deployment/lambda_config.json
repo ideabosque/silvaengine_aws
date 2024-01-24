@@ -77,7 +77,7 @@
                 "reportlab.libs",
                 "PIL",
                 "pillow-10.2.0.dist-info",
-                "Pillow.libs",
+                "pillow.libs",
                 "jinja2",
                 "markupsafe",
                 "humps",
