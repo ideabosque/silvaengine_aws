@@ -39,7 +39,6 @@
                 "urllib3",
                 "chardet",
                 "certifi",
-                "certifi-2023.11.17.dist-info",
                 "idna",
                 "tenacity",
                 "dotenv",
