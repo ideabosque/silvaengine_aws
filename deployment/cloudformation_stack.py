@@ -254,13 +254,13 @@ class CloudformationStack(object):
                     ),
                     "S3Key": function_file,
                 }
-                template["Resources"][key]["Properties"]["Environment"][
-                    "Variables"
-                ] = dict(
-                    (k, os.getenv(k, v))
-                    for k, v in template["Resources"][key]["Properties"]["Environment"][
-                        "Variables"
-                    ].items()
+                template["Resources"][key]["Properties"]["Environment"]["Variables"] = (
+                    dict(
+                        (k, os.getenv(k, v))
+                        for k, v in template["Resources"][key]["Properties"][
+                            "Environment"
+                        ]["Variables"].items()
+                    )
                 )
                 if os.getenv("runtime"):
                     template["Resources"][key]["Properties"]["Runtime"] = os.getenv(
