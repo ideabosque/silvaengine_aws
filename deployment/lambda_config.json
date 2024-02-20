@@ -104,7 +104,8 @@
                 "jsonschema_specifications",
                 "pypng",
                 "pypng-0.20220715.0.dist-info",
-                "qrcode"
+                "qrcode",
+                "yaml"
             ],
             "package_files": [
                 "typing_extensions.py",
