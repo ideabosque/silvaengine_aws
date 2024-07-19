@@ -1,10 +1,16 @@
-import boto3, json, sys, os, dotenv, zipfile, importlib
-from botocore.configloader import load_config
-from datetime import datetime, date
+import importlib
+import json
+import os
+import sys
+import zipfile
+from datetime import date, datetime
 from decimal import Decimal
 from time import sleep
-from botocore.exceptions import ClientError
 
+import boto3
+import dotenv
+from botocore.configloader import load_config
+from botocore.exceptions import ClientError
 
 # Look for a .env file
 if len(sys.argv) == 3:
@@ -102,6 +108,7 @@ class CloudformationStack(object):
         )
         self.aws_s3 = boto3.resource(
             "s3",
+            region_name=os.getenv("region_name"),
             aws_access_key_id=os.getenv("aws_access_key_id"),
             aws_secret_access_key=os.getenv("aws_secret_access_key"),
         )
