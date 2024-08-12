@@ -119,7 +119,8 @@
                 "xmltodict.py",
                 "jsonpatch.py",
                 "jsonpointer.py",
-                "png.py"
+                "png.py",
+                "ujson.cpython-38-x86_64-linux-gnu.so"
             ],
             "files": {}
         },
