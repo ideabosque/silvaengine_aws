@@ -101,7 +101,7 @@
                   "REGIONNAME": "us-west-2"
                }
             },
-            "MemorySize": 256
+            "MemorySize": 512
          },
          "DependsOn": [
             "SilvaEngineExecRole",
@@ -137,7 +137,7 @@
                   "DYNAMODBSTREAMENDPOINTID": "datamart"
                }
             },
-            "MemorySize": 256
+            "MemorySize": 512
          },
          "DependsOn": [
             "SilvaEngineExecRole",
