@@ -55,7 +55,8 @@
                            "Action": [
                               "iam:ListRoles",
                               "iam:ListOpenIdConnectProviders",
-                              "sns:ListPlatformApplications"
+                              "sns:ListPlatformApplications",
+                              "execute-api:ManageConnections"
                            ],
                            "Resource": "*",
                            "Effect": "Allow"
@@ -687,6 +688,112 @@
             "KeyType": "API_KEY",
             "UsagePlanId": {
                "Ref": "BetaUsagePlan"
+            }
+         }
+      },
+      "SilvaEngineWebSocketApi": {
+         "Type": "AWS::ApiGatewayV2::Api",
+         "Properties": {
+            "Name": "SilvaEngineWebSocketApi",
+            "ProtocolType": "WEBSOCKET",
+            "RouteSelectionExpression": "$request.body.action"
+         }
+      },
+      "SilvaEngineWebSocketConnectRoute": {
+         "Type": "AWS::ApiGatewayV2::Route",
+         "Properties": {
+            "ApiId": {
+               "Ref": "SilvaEngineWebSocketApi"
+            },
+            "RouteKey": "$connect",
+            "AuthorizationType": "NONE",
+            "Target": {
+               "Fn::Join": [
+                  "/",
+                  [
+                     "integrations",
+                     {
+                        "Ref": "SilvaEngineWebSocketLambdaIntegration"
+                     }
+                  ]
+               ]
+            }
+         }
+      },
+      "SilvaEngineWebSocketDisconnectRoute": {
+         "Type": "AWS::ApiGatewayV2::Route",
+         "Properties": {
+            "ApiId": {
+               "Ref": "SilvaEngineWebSocketApi"
+            },
+            "RouteKey": "$disconnect",
+            "AuthorizationType": "NONE",
+            "Target": {
+               "Fn::Join": [
+                  "/",
+                  [
+                     "integrations",
+                     {
+                        "Ref": "SilvaEngineWebSocketLambdaIntegration"
+                     }
+                  ]
+               ]
+            }
+         }
+      },
+      "SilvaEngineWebSocketStreamRoute": {
+         "Type": "AWS::ApiGatewayV2::Route",
+         "Properties": {
+            "ApiId": {
+               "Ref": "SilvaEngineWebSocketApi"
+            },
+            "RouteKey": "stream",
+            "AuthorizationType": "NONE",
+            "Target": {
+               "Fn::Join": [
+                  "/",
+                  [
+                     "integrations",
+                     {
+                        "Ref": "SilvaEngineWebSocketLambdaIntegration"
+                     }
+                  ]
+               ]
+            }
+         }
+      },
+      "SilvaEngineWebSocketLambdaIntegration": {
+         "Type": "AWS::ApiGatewayV2::Integration",
+         "Properties": {
+            "ApiId": {
+               "Ref": "SilvaEngineWebSocketApi"
+            },
+            "IntegrationType": "AWS_PROXY",
+            "IntegrationUri": {
+               "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SilvaEngineAgentTask.Arn}/invocations"
+            }
+         }
+      },
+      "SilvaEngineWebSocketStage": {
+         "Type": "AWS::ApiGatewayV2::Stage",
+         "Properties": {
+            "ApiId": {
+               "Ref": "SilvaEngineWebSocketApi"
+            },
+            "StageName": "beta",
+            "AutoDeploy": true
+         }
+      },
+      "SilvaEngineWebSocketPermission": {
+         "Type": "AWS::Lambda::Permission",
+         "Properties": {
+            "FunctionName": {
+               "Ref": "SilvaEngineAgentTask"
+            },
+            "Action": "lambda:InvokeFunction",
+            "Principal": "apigateway.amazonaws.com",
+            "SourceArn": {
+               "Fn::Sub": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SilvaEngineWebSocketApi}/*"
             }
          }
       }
