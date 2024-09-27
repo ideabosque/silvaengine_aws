@@ -770,7 +770,7 @@
             },
             "IntegrationType": "AWS_PROXY",
             "IntegrationUri": {
-               "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SilvaEngineAgentTask.Arn}/invocations"
+               "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SilvaEngineAreaResource.Arn}/invocations"
             }
          }
       },
@@ -788,7 +788,7 @@
          "Type": "AWS::Lambda::Permission",
          "Properties": {
             "FunctionName": {
-               "Ref": "SilvaEngineAgentTask"
+               "Ref": "SilvaEngineAreaResource"
             },
             "Action": "lambda:InvokeFunction",
             "Principal": "apigateway.amazonaws.com",
