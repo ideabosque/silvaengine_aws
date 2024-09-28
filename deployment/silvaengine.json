@@ -437,6 +437,47 @@
             ]
          }
       },
+      "SilvaEngineWSSConnections": {
+         "Type": "AWS::DynamoDB::Table",
+         "Properties": {
+            "TableName": "se-wss-connections",
+            "BillingMode": "PAY_PER_REQUEST",
+            "AttributeDefinitions": [
+               {
+                  "AttributeName": "endpoint_id",
+                  "AttributeType": "S"
+               },
+               {
+                  "AttributeName": "connection_id",
+                  "AttributeType": "S"
+               }
+            ],
+            "KeySchema": [
+               {
+                  "AttributeName": "endpoint_id",
+                  "KeyType": "HASH"
+               },
+               {
+                  "AttributeName": "connection_id",
+                  "KeyType": "RANGE"
+               }
+            ],
+            "GlobalSecondaryIndexes": [
+               {
+                  "IndexName": "connection_id-index",
+                  "KeySchema": [
+                     {
+                        "AttributeName": "connection_id",
+                        "KeyType": "HASH"
+                     }
+                  ],
+                  "Projection": {
+                     "ProjectionType": "ALL"
+                  }
+               }
+            ]
+         }
+      },
       "SilvaEngineLocks": {
          "Type": "AWS::DynamoDB::Table",
          "Properties": {
