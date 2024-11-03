@@ -1,3 +1,9 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+
+__author__ = "bibow"
+
 import importlib
 import json
 import os
@@ -48,7 +54,7 @@ def execute_hook(lambda_function_name, function_config, hook_function_name):
     packages = function_config.get("hooks", {}).get("packages")
     if type(packages) is not list or len(packages) < 1:
         return
-
+    print(packages)
     events = function_config.get("hooks", {}).get("events")
     if type(events) is not dict or len(events) < 1:
         return
@@ -62,6 +68,7 @@ def execute_hook(lambda_function_name, function_config, hook_function_name):
         if requires != [v for v in requires if v in hook.keys()]:
             continue
 
+        print(hook.get("package_name"))
         spec = importlib.util.find_spec(hook.get("package_name"))
 
         if spec is None:
@@ -78,7 +85,6 @@ def execute_hook(lambda_function_name, function_config, hook_function_name):
                 str(function_config.get("endpoint_id")).strip(),
                 packages,
             )
-
     logger.info(f"Execute {hook_function_name} hooks.")
 
 
@@ -278,6 +284,18 @@ class CloudformationStack(object):
                         "SecurityGroupIds": os.getenv("security_group_ids").split(","),
                         "SubnetIds": os.getenv("subnet_ids").split(","),
                     }
+                if os.getenv("efs_access_point") and template["Resources"][key][
+                    "Properties"
+                ]["Environment"]["Variables"].get("EFSMOUNTPOINT"):
+                    template["Resources"][key]["Properties"]["FileSystemConfigs"] = [
+                        {
+                            "Arn": {
+                                "Fn::Sub": "arn:aws:elasticfilesystem:${AWS::Region}:${AWS::AccountId}:access-point/"
+                                + os.getenv("efs_access_point")
+                            },
+                            "LocalMountPath": os.getenv("efs_local_mount_path"),
+                        }
+                    ]
             elif value["Type"] == "AWS::Lambda::LayerVersion":
                 layer_name = value["Properties"]["LayerName"]
                 layer_file = f"{layer_name}.zip"
