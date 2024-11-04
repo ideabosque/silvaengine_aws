@@ -32,8 +32,6 @@ lambda_config = json.load(
 )
 root_path = os.getenv("root_path")
 site_packages = os.getenv("site_packages")
-functions = os.getenv("functions", "").split(",")
-layers = os.getenv("layers", "").split(",")
 
 import logging
 
@@ -212,6 +210,18 @@ class CloudformationStack(object):
     @classmethod
     def deploy(cls):
         cf = cls()
+        stack_name = sys.argv[-1]
+        template = json.load(open(f"{stack_name}.json", "r"))
+
+        functions = []
+        layers = []
+        for key, value in template["Resources"].items():
+            if value["Type"] == "AWS::Lambda::Function":
+                function_name = value["Properties"]["FunctionName"]
+                functions.append(function_name)
+            elif value["Type"] == "AWS::Lambda::LayerVersion":
+                layer_name = value["Properties"]["LayerName"]
+                layers.append(layer_name)
 
         # 1. Package and upload the code.
         for name, funct in lambda_config["functions"].items():
@@ -244,9 +254,6 @@ class CloudformationStack(object):
             logger.info(f"Upload the lambda layer package ({name}).")
 
         # 2. Update the cloudformation stack.
-        stack_name = sys.argv[-1]
-        template = json.load(open(f"{stack_name}.json", "r"))
-
         for key, value in template["Resources"].items():
             if value["Type"] == "AWS::Lambda::Function":
                 function_name = value["Properties"]["FunctionName"]
