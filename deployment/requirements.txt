@@ -36,7 +36,6 @@ pyhumps==3.8.0
 warlock==2.0.1
 xmltodict==0.13.0
 dicttoxml==1.7.15
-numpy==1.26.4
 pandas==1.5.2
 jsonpickle==3.0.0
 elasticsearch==7.10.1
