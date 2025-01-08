@@ -6,6 +6,12 @@
             "package_files": [],
             "files": {}
         },
+        "silvaengine_area_resource_http": {
+            "base": "/api",
+            "packages": [],
+            "package_files": [],
+            "files": {}
+        },
         "silvaengine_agenttask": {
             "base": "/taskqueue/agenttask",
             "packages": [],
