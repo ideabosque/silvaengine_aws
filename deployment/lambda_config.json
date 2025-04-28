@@ -88,9 +88,6 @@
                 "humps",
                 "ordered_set",
                 "warlock",
-                "pandas",
-                "numpy",
-                "numpy.libs",
                 "jsonschema",
                 "jsonschema-3.2.0.dist-info",
                 "importlib_resources",
@@ -111,8 +108,7 @@
                 "pypng",
                 "pypng-0.20220715.0.dist-info",
                 "qrcode",
-                "yaml",
-                "ujson-5.10.0.dist-info"
+                "yaml"
             ],
             "package_files": [
                 "typing_extensions.py",
